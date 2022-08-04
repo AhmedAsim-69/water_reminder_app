@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:water_reminder/pages/gender_page.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
+import 'package:water_reminder/pages/homepage.dart';
 
 class SleepCyclePage extends StatefulWidget {
   const SleepCyclePage({Key? key, required this.title}) : super(key: key);
@@ -43,9 +44,15 @@ class _SleepCyclePageState extends State<SleepCyclePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  const BuildPadding(text: 'Wakeup Time'),
+                  const BuildPadding(
+                    text: 'Wakeup Time',
+                    textcolor: Color.fromARGB(255, 97, 97, 97),
+                  ),
                   BuildTime(format: format, context: context, time: 'Wakeup'),
-                  const BuildPadding(text: 'Bed Time'),
+                  const BuildPadding(
+                    text: 'Bed Time',
+                    textcolor: Color.fromARGB(255, 97, 97, 97),
+                  ),
                   BuildTime(format: format, context: context, time: 'Bed'),
                   const SizedBox(
                     height: 20,
@@ -61,9 +68,8 @@ class _SleepCyclePageState extends State<SleepCyclePage> {
                     onPressed: () => {
                       Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(
-                              builder: (context) => const GenderPage(
-                                    title: 'title',
-                                  )),
+                            builder: (context) => const Homepage(),
+                          ),
                           (Route<dynamic> route) => false),
                     },
                     child: const Text(
@@ -137,16 +143,22 @@ class BuildTime extends StatelessWidget {
 
 class BuildPadding extends StatelessWidget {
   final String text;
-  const BuildPadding({Key? key, required this.text}) : super(key: key);
+  final Color textcolor;
+  const BuildPadding({Key? key, required this.text, required this.textcolor})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: const EdgeInsets.only(
-          top: 5,
-          bottom: 5,
-          right: 270,
-        ),
-        child: Text(text, style: TextStyle(color: Colors.grey.shade700)));
+      padding: const EdgeInsets.only(
+        top: 5,
+        bottom: 5,
+        right: 250,
+      ),
+      child: Text(
+        text,
+        style: TextStyle(color: textcolor),
+      ),
+    );
   }
 }
