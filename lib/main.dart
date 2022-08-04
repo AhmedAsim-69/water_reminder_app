@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.openSansTextTheme(
           Theme.of(context).textTheme,
         ),
-        primarySwatch: Colors.blue,
+        primaryColor: const Color.fromARGB(255, 79, 168, 197),
       ),
       home: const WeightPage(title: 'title'),
     );

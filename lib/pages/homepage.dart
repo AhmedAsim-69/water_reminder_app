@@ -29,16 +29,17 @@ class _HomepageState extends State<Homepage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 241, 247, 249),
-      appBar: AppBar(
-        title: const Text(
-          "Water Reminder",
-          textScaleFactor: 1,
-          style: TextStyle(
-            color: Colors.black,
-          ),
-        ),
-        centerTitle: true,
-      ),
+      // appBar: AppBar(
+      //   backgroundColor: const Color.fromARGB(255, 79, 168, 197),
+      //   title: const Text(
+      //     "Water Reminder",
+      //     textScaleFactor: 1,
+      //     style: TextStyle(
+      //       color: Colors.black,
+      //     ),
+      //   ),
+      //   centerTitle: true,
+      // ),
       body: widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Theme.of(context).primaryColor,

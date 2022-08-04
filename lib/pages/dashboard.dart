@@ -17,9 +17,20 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Color.fromARGB(255, 241, 247, 249),
-      body: Center(
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 79, 168, 197),
+        title: const Text(
+          "Water Reminder",
+          textScaleFactor: 1,
+          style: TextStyle(
+            color: Colors.black,
+          ),
+        ),
+        centerTitle: true,
+      ),
+      backgroundColor: const Color.fromARGB(255, 241, 247, 249),
+      body: const Center(
         child: Text(
           "Nothing to show yet",
           style: TextStyle(
