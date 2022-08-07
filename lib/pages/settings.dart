@@ -190,12 +190,12 @@ class _SettingsPageState extends State<SettingsPage> {
                   minimumSize: const Size(325, 45),
                 ),
                 onPressed: () => {
-                  Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(
-                          builder: (context) => const GenderPage(
-                                title: 'title',
-                              )),
-                      (Route<dynamic> route) => false),
+                  // Navigator.of(context).pushAndRemoveUntil(
+                  //     MaterialPageRoute(
+                  //         builder: (context) => const GenderPage(
+                  //               title: 'title',
+                  //             )),
+                  //     (Route<dynamic> route) => false),
                 },
                 child: const Text(
                   "SAVE",

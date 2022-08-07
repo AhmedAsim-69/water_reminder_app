@@ -1,19 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:water_reminder/pages/gender_page.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:water_reminder/pages/homepage.dart';
+import 'package:water_reminder/pages/weight_page.dart';
 
-class WeightPage extends StatefulWidget {
-  const WeightPage({Key? key, required this.title}) : super(key: key);
+class WaterIntakePage extends StatefulWidget {
+  const WaterIntakePage(
+      {Key? key,
+      required this.title,
+      required this.weight,
+      required this.gender,
+      required this.bedTime,
+      required this.wakeTime})
+      : super(key: key);
 
   final String title;
+  final int weight;
+  final String gender;
+  final DateTime? bedTime;
+  final DateTime? wakeTime;
 
   @override
-  State<WeightPage> createState() => _WeightPageState();
+  State<WaterIntakePage> createState() => _WaterIntakePageState();
 }
 
-class _WeightPageState extends State<WeightPage> {
-  final weightctrl = TextEditingController();
-  var weight = 0;
+class _WaterIntakePageState extends State<WaterIntakePage> {
+  late var waterCal = widget.weight * 0.033 * 1000;
+  late var waterIntake = waterCal.round().toInt();
+
+  late var weightctrl = TextEditingController(text: waterIntake.toString());
+
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -27,7 +41,7 @@ class _WeightPageState extends State<WeightPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const BuildText(
-                text: 'WEIGHT',
+                text: 'WATER IN-TAKE',
               ),
               const SizedBox(
                 height: 188,
@@ -38,7 +52,7 @@ class _WeightPageState extends State<WeightPage> {
                   bottom: 5,
                 ),
                 child: Text(
-                  'Weight',
+                  'Daily Water In-take',
                   style: TextStyle(color: Colors.grey.shade700),
                 ),
               ),
@@ -50,18 +64,20 @@ class _WeightPageState extends State<WeightPage> {
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 20),
                       child: TextFormField(
+                        // initialValue: '20',
                         keyboardType: TextInputType.number,
                         controller: weightctrl,
+                        readOnly: true,
                         decoration: InputDecoration(
-                          labelText: 'Enter your weight: ',
-                          labelStyle: const TextStyle(color: Colors.black),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              width: 2,
-                              color: Color.fromARGB(255, 79, 168, 197),
-                            ),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
+                          // labelText: 'Enter your weight: ',
+                          // labelStyle: const TextStyle(color: Colors.black),
+                          // enabledBorder: OutlineInputBorder(
+                          //   borderSide: const BorderSide(
+                          //     width: 2,
+                          //     color: Color.fromARGB(255, 79, 168, 197),
+                          //   ),
+                          //   borderRadius: BorderRadius.circular(8),
+                          // ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
                               width: 2,
@@ -69,17 +85,17 @@ class _WeightPageState extends State<WeightPage> {
                             ),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          border: OutlineInputBorder(
-                            borderSide:
-                                const BorderSide(width: 2, color: Colors.green),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          errorStyle: const TextStyle(
-                              color: Colors.redAccent, fontSize: 14),
+                          // border: OutlineInputBorder(
+                          //   borderSide:
+                          //       const BorderSide(width: 2, color: Colors.green),
+                          //   borderRadius: BorderRadius.circular(8),
+                          // ),
+                          // errorStyle: const TextStyle(
+                          //     color: Colors.redAccent, fontSize: 14),
                           suffixIcon: const Padding(
                             padding: EdgeInsets.only(left: 10, top: 13),
                             child: Text(
-                              'Kg',
+                              'ml',
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 16,
@@ -87,12 +103,12 @@ class _WeightPageState extends State<WeightPage> {
                             ),
                           ),
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your weight';
-                          }
-                          return null;
-                        },
+                        // validator: (value) {
+                        //   if (value == null || value.isEmpty) {
+                        //     return 'Please enter your weight';
+                        //   }
+                        //   return null;
+                        // },
                       ),
                     ),
                     const SizedBox(
@@ -109,15 +125,19 @@ class _WeightPageState extends State<WeightPage> {
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           setState(() {
-                            weight = int.parse(weightctrl.text);
-                            createUser(weight: weight);
+                            waterIntake = int.parse(weightctrl.text);
+                            createUser(
+                              weight: widget.weight,
+                              gender: widget.gender,
+                              wakeTime: widget.bedTime,
+                              bedTime: widget.bedTime,
+                              waterIntake: waterIntake,
+                            );
                           });
                           Navigator.of(context).pushAndRemoveUntil(
                               MaterialPageRoute(
-                                  builder: (context) => GenderPage(
-                                        title: 'title',
-                                        weight: weight,
-                                      )),
+                                builder: (context) => const Homepage(),
+                              ),
                               (Route<dynamic> route) => false);
                         }
                       },
@@ -161,41 +181,4 @@ class BuildText extends StatelessWidget {
       ),
     );
   }
-}
-
-Future createUser({
-  int? weight,
-  String? gender,
-  DateTime? wakeTime,
-  DateTime? bedTime,
-  int? waterIntake,
-}) async {
-  final docUser = FirebaseFirestore.instance.collection('user').doc('user1');
-
-  final json = {
-    'weight': weight,
-    'gender': gender,
-    'bedTime': bedTime,
-    'wakeTime': wakeTime,
-    'waterIntake': waterIntake,
-  };
-
-  await docUser.set(json);
-}
-
-Future updateUser(
-    {int? weight,
-    String? gender,
-    DateTime? wakeTime,
-    DateTime? bedTime}) async {
-  final docUser = FirebaseFirestore.instance.collection('user').doc('user1');
-
-  final json = {
-    'weight': weight,
-    'gender': gender,
-    'bedTime': bedTime,
-    'wakeTime': wakeTime,
-  };
-
-  await docUser.set(json);
 }

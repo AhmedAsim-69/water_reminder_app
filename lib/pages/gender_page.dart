@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:water_reminder/pages/sleep_cycle_page.dart';
+import 'package:water_reminder/pages/weight_page.dart';
 
 class GenderPage extends StatefulWidget {
-  const GenderPage({Key? key, required this.title}) : super(key: key);
+  const GenderPage({Key? key, required this.title, required this.weight})
+      : super(key: key);
 
   final String title;
+  final int weight;
 
   @override
   State<GenderPage> createState() => _GenderPageState();
@@ -13,7 +16,8 @@ class GenderPage extends StatefulWidget {
 enum SingingCharacter { male, female }
 
 class _GenderPageState extends State<GenderPage> {
-  SingingCharacter? _character = SingingCharacter.male;
+  SingingCharacter? character = SingingCharacter.male;
+  late var weight = widget.weight;
 
   @override
   Widget build(BuildContext context) {
@@ -44,10 +48,10 @@ class _GenderPageState extends State<GenderPage> {
                   title: const Text('Male'),
                   leading: Radio<SingingCharacter>(
                     value: SingingCharacter.male,
-                    groupValue: _character,
+                    groupValue: character,
                     onChanged: (SingingCharacter? value) {
                       setState(() {
-                        _character = value;
+                        character = value;
                       });
                     },
                   ),
@@ -56,10 +60,10 @@ class _GenderPageState extends State<GenderPage> {
                   title: const Text('Female'),
                   leading: Radio<SingingCharacter>(
                     value: SingingCharacter.female,
-                    groupValue: _character,
+                    groupValue: character,
                     onChanged: (SingingCharacter? value) {
                       setState(() {
-                        _character = value;
+                        character = value;
                       });
                     },
                   ),
@@ -76,12 +80,43 @@ class _GenderPageState extends State<GenderPage> {
                       minimumSize: const Size(325, 45),
                     ),
                     onPressed: () {
-                      Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(
-                              builder: (context) => const SleepCyclePage(
-                                    title: 'title',
-                                  )),
-                          (Route<dynamic> route) => false);
+                      switch (character) {
+                        case SingingCharacter.male:
+                          {
+                            createUser(weight: widget.weight, gender: 'Male');
+                            Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                    builder: (context) => SleepCyclePage(
+                                          title: 'title',
+                                          weight: widget.weight,
+                                          gender: 'Female',
+                                        )),
+                                (Route<dynamic> route) => false);
+                            return;
+                          }
+                        case SingingCharacter.female:
+                          {
+                            createUser(weight: widget.weight, gender: 'Female');
+                            Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                    builder: (context) => SleepCyclePage(
+                                          title: 'title',
+                                          weight: weight,
+                                          gender: 'Female',
+                                        )),
+                                (Route<dynamic> route) => false);
+                            return;
+                          }
+                        default:
+                          break;
+                      }
+
+                      // Navigator.of(context).pushAndRemoveUntil(
+                      //     MaterialPageRoute(
+                      //         builder: (context) => const SleepCyclePage(
+                      //               title: 'title',
+                      //             )),
+                      //     (Route<dynamic> route) => false);
                     },
                     child: const Text(
                       "CONTINUE",

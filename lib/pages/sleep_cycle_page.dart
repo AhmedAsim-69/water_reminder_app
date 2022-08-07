@@ -2,12 +2,20 @@ import 'package:flutter/material.dart';
 // import 'package:water_reminder/pages/gender_page.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
-import 'package:water_reminder/pages/homepage.dart';
+import 'package:water_reminder/pages/water_intake.dart';
+import 'package:water_reminder/pages/weight_page.dart';
 
 class SleepCyclePage extends StatefulWidget {
-  const SleepCyclePage({Key? key, required this.title}) : super(key: key);
+  const SleepCyclePage(
+      {Key? key,
+      required this.title,
+      required this.weight,
+      required this.gender})
+      : super(key: key);
 
   final String title;
+  final int weight;
+  final String gender;
 
   @override
   State<SleepCyclePage> createState() => _SleepCyclePageState();
@@ -16,6 +24,8 @@ class SleepCyclePage extends StatefulWidget {
 class _SleepCyclePageState extends State<SleepCyclePage> {
   final weightctrl = TextEditingController();
   final format = DateFormat("hh:mm a");
+  late var weight1 = widget.weight;
+  late var gender1 = widget.gender;
   DateTime? wakeTime = DateTime(2017, 9, 7, 9, 30);
   DateTime? bedTime = DateTime(2017, 9, 7, 22, 30);
   @override
@@ -77,9 +87,20 @@ class _SleepCyclePageState extends State<SleepCyclePage> {
                         minimumSize: const Size(325, 45),
                       ),
                       onPressed: () {
+                        createUser(
+                            weight: widget.weight,
+                            gender: widget.gender,
+                            bedTime: bedTime,
+                            wakeTime: wakeTime);
                         Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(
-                              builder: (context) => const Homepage(),
+                              builder: (context) => WaterIntakePage(
+                                title: 'title',
+                                weight: weight1,
+                                gender: gender1,
+                                bedTime: bedTime,
+                                wakeTime: wakeTime,
+                              ),
                             ),
                             (Route<dynamic> route) => false);
                       },
