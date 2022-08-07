@@ -16,73 +16,85 @@ class SleepCyclePage extends StatefulWidget {
 class _SleepCyclePageState extends State<SleepCyclePage> {
   final weightctrl = TextEditingController();
   final format = DateFormat("hh:mm a");
+  DateTime? wakeTime = DateTime(2017, 9, 7, 9, 30);
+  DateTime? bedTime = DateTime(2017, 9, 7, 22, 30);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 241, 247, 249),
       body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.only(top: 180),
-              alignment: Alignment.center,
-              child: const Text(
-                'SLEEP CYCLE',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 79, 168, 197),
+        child: Form(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.only(top: 180),
+                alignment: Alignment.center,
+                child: const Text(
+                  'SLEEP CYCLE',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 79, 168, 197),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(
-              height: 130,
-            ),
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  const BuildPadding(
-                    text: 'Wakeup Time',
-                    textcolor: Color.fromARGB(255, 97, 97, 97),
-                  ),
-                  BuildTime(format: format, context: context, time: 'Wakeup'),
-                  const BuildPadding(
-                    text: 'Bed Time',
-                    textcolor: Color.fromARGB(255, 97, 97, 97),
-                  ),
-                  BuildTime(format: format, context: context, time: 'Bed'),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: const Color.fromARGB(255, 79, 168, 197),
-                      elevation: 3,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(32.0)),
-                      minimumSize: const Size(325, 45),
+              const SizedBox(
+                height: 130,
+              ),
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    const BuildPadding(
+                      text: 'Wakeup Time',
+                      textcolor: Color.fromARGB(255, 97, 97, 97),
                     ),
-                    onPressed: () => {
-                      Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(
-                            builder: (context) => const Homepage(),
-                          ),
-                          (Route<dynamic> route) => false),
-                    },
-                    child: const Text(
-                      "CONTINUE",
-                      style: TextStyle(
-                        fontSize: 24,
+                    BuildTime(
+                        format: format,
+                        context: context,
+                        time: 'Wakeup',
+                        tempTime: wakeTime),
+                    const BuildPadding(
+                      text: 'Bed Time',
+                      textcolor: Color.fromARGB(255, 97, 97, 97),
+                    ),
+                    BuildTime(
+                        format: format,
+                        context: context,
+                        time: 'Bed',
+                        tempTime: bedTime),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: const Color.fromARGB(255, 79, 168, 197),
+                        elevation: 3,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(32.0)),
+                        minimumSize: const Size(325, 45),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                              builder: (context) => const Homepage(),
+                            ),
+                            (Route<dynamic> route) => false);
+                      },
+                      child: const Text(
+                        "CONTINUE",
+                        style: TextStyle(
+                          fontSize: 24,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -91,11 +103,13 @@ class _SleepCyclePageState extends State<SleepCyclePage> {
 
 class BuildTime extends StatelessWidget {
   final String time;
+  final DateTime? tempTime;
   const BuildTime({
     Key? key,
     required this.format,
     required this.context,
     required this.time,
+    required this.tempTime,
   }) : super(key: key);
 
   final DateFormat format;
@@ -128,6 +142,14 @@ class BuildTime extends StatelessWidget {
           ),
         ),
         format: format,
+        initialValue: tempTime, //Add this in your Code.
+        validator: (val) {
+          if (val != null) {
+            return null;
+          } else {
+            return 'Date Field is Empty';
+          }
+        },
         onShowPicker: (context, currentValue) async {
           final time = await showTimePicker(
             context: context,

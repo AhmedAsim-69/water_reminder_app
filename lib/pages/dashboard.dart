@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:water_reminder/pages/sleep_cycle_page.dart';
+// import 'package:water_reminder/pages/sleep_cycle_page.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key, required this.title}) : super(key: key);
@@ -13,7 +13,7 @@ class Dashboard extends StatefulWidget {
 enum SingingCharacter { male, female }
 
 class _DashboardState extends State<Dashboard> {
-  SingingCharacter? _character = SingingCharacter.male;
+  // SingingCharacter? _character = SingingCharacter.male;
 
   @override
   Widget build(BuildContext context) {

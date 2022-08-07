@@ -14,6 +14,8 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   final weightctrl = TextEditingController();
+  DateTime? wakeTime = DateTime(2017, 9, 7, 9, 30);
+  DateTime? bedTime = DateTime(2017, 9, 7, 22, 30);
   SingingCharacter? _character = SingingCharacter.male;
   final format = DateFormat("hh:mm a");
 
@@ -156,12 +158,22 @@ class _SettingsPageState extends State<SettingsPage> {
                       text: 'Wakeup Time',
                       textcolor: Color.fromARGB(255, 79, 168, 197),
                     ),
-                    BuildTime(format: format, context: context, time: 'Wakeup'),
+                    BuildTime(
+                      format: format,
+                      context: context,
+                      time: 'Wakeup',
+                      tempTime: wakeTime,
+                    ),
                     const BuildPadding(
                       text: 'Bed Time',
                       textcolor: Color.fromARGB(255, 79, 168, 197),
                     ),
-                    BuildTime(format: format, context: context, time: 'Bed'),
+                    BuildTime(
+                      format: format,
+                      context: context,
+                      time: 'Bed',
+                      tempTime: bedTime,
+                    ),
                   ],
                 ),
               ),

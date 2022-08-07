@@ -17,15 +17,24 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for ios - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -43,40 +52,11 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAueAq2tTunIBOz6XMmmTxgH7FahWEKGEg',
-    appId: '1:762777123695:web:ca8fbdf32a34febfe8069a',
-    messagingSenderId: '762777123695',
-    projectId: 'water-reminder-app-1',
-    authDomain: 'water-reminder-app-1.firebaseapp.com',
-    storageBucket: 'water-reminder-app-1.appspot.com',
-  );
-
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyB250WmhcWhQN9PZLxoJUw5n6fBKOQpnHs',
     appId: '1:762777123695:android:2b50ccf210a90fa4e8069a',
     messagingSenderId: '762777123695',
     projectId: 'water-reminder-app-1',
     storageBucket: 'water-reminder-app-1.appspot.com',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyB_ls3ofLIZQdWpIr6IYKFCFjhTiNfhEGU',
-    appId: '1:762777123695:ios:881743bb426c2391e8069a',
-    messagingSenderId: '762777123695',
-    projectId: 'water-reminder-app-1',
-    storageBucket: 'water-reminder-app-1.appspot.com',
-    iosClientId: '762777123695-9pqf2hm6vn3hof1jmf7u1lf5gcbtrhdg.apps.googleusercontent.com',
-    iosBundleId: 'com.example.waterReminder',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyB_ls3ofLIZQdWpIr6IYKFCFjhTiNfhEGU',
-    appId: '1:762777123695:ios:881743bb426c2391e8069a',
-    messagingSenderId: '762777123695',
-    projectId: 'water-reminder-app-1',
-    storageBucket: 'water-reminder-app-1.appspot.com',
-    iosClientId: '762777123695-9pqf2hm6vn3hof1jmf7u1lf5gcbtrhdg.apps.googleusercontent.com',
-    iosBundleId: 'com.example.waterReminder',
   );
 }
