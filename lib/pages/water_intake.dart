@@ -29,6 +29,8 @@ class _WaterIntakePageState extends State<WaterIntakePage> {
   late var weightctrl = TextEditingController(text: waterIntake.toString());
 
   final _formKey = GlobalKey<FormState>();
+  late var wakeTime1 = widget.wakeTime;
+  late var bedTime1 = widget.bedTime;
 
   @override
   Widget build(BuildContext context) {
@@ -64,20 +66,10 @@ class _WaterIntakePageState extends State<WaterIntakePage> {
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 20),
                       child: TextFormField(
-                        // initialValue: '20',
                         keyboardType: TextInputType.number,
                         controller: weightctrl,
                         readOnly: true,
                         decoration: InputDecoration(
-                          // labelText: 'Enter your weight: ',
-                          // labelStyle: const TextStyle(color: Colors.black),
-                          // enabledBorder: OutlineInputBorder(
-                          //   borderSide: const BorderSide(
-                          //     width: 2,
-                          //     color: Color.fromARGB(255, 79, 168, 197),
-                          //   ),
-                          //   borderRadius: BorderRadius.circular(8),
-                          // ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
                               width: 2,
@@ -85,13 +77,6 @@ class _WaterIntakePageState extends State<WaterIntakePage> {
                             ),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          // border: OutlineInputBorder(
-                          //   borderSide:
-                          //       const BorderSide(width: 2, color: Colors.green),
-                          //   borderRadius: BorderRadius.circular(8),
-                          // ),
-                          // errorStyle: const TextStyle(
-                          //     color: Colors.redAccent, fontSize: 14),
                           suffixIcon: const Padding(
                             padding: EdgeInsets.only(left: 10, top: 13),
                             child: Text(
@@ -103,12 +88,6 @@ class _WaterIntakePageState extends State<WaterIntakePage> {
                             ),
                           ),
                         ),
-                        // validator: (value) {
-                        //   if (value == null || value.isEmpty) {
-                        //     return 'Please enter your weight';
-                        //   }
-                        //   return null;
-                        // },
                       ),
                     ),
                     const SizedBox(
@@ -129,14 +108,17 @@ class _WaterIntakePageState extends State<WaterIntakePage> {
                             createUser(
                               weight: widget.weight,
                               gender: widget.gender,
-                              wakeTime: widget.bedTime,
+                              wakeTime: widget.wakeTime,
                               bedTime: widget.bedTime,
                               waterIntake: waterIntake,
                             );
                           });
                           Navigator.of(context).pushAndRemoveUntil(
                               MaterialPageRoute(
-                                builder: (context) => const Homepage(),
+                                builder: (context) => Homepage(
+                                    waketime: wakeTime1,
+                                    bedtime: bedTime1,
+                                    gender: widget.gender),
                               ),
                               (Route<dynamic> route) => false);
                         }

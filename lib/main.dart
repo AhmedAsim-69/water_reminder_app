@@ -1,14 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'firebase_options.dart';
 
 import 'package:google_fonts/google_fonts.dart';
-import 'package:water_reminder/pages/sleep_cycle_page.dart';
-// Import the generated file
-// import 'firebase_options.dart';
-// import 'package:water_reminder/pages/gender_page.dart';
-// import 'package:water_reminder/pages/settings.dart';
-// import 'package:water_reminder/pages/sleep_cycle_page.dart';
+
 import 'package:water_reminder/pages/weight_page.dart';
 
 Future main() async {
@@ -44,7 +38,11 @@ class MyApp extends StatelessWidget {
             ),
             primaryColor: const Color.fromARGB(255, 79, 168, 197),
           ),
-          home: const WeightPage(title: 'title'),
+          home: const WeightPage(title: "title"),
+          // home: Homepage(
+          //   bedtime: DateTime.now(),
+          //   waketime: DateTime.now(),
+          // ),
         );
       },
     );

@@ -1,23 +1,51 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:water_reminder/pages/gender_page.dart';
 import 'package:water_reminder/pages/sleep_cycle_page.dart';
 import 'package:intl/intl.dart';
+import 'package:water_reminder/pages/weight_page.dart';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({Key? key, required this.title}) : super(key: key);
-
+  const SettingsPage(
+      {Key? key,
+      required this.title,
+      required this.bedtime,
+      required this.waketime,
+      required this.gender})
+      : super(key: key);
+  final DateTime? bedtime;
+  final DateTime? waketime;
   final String title;
+  final String gender;
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
 }
 
+enum SingingCharacter { male, female }
+
 class _SettingsPageState extends State<SettingsPage> {
-  final weightctrl = TextEditingController();
-  DateTime? wakeTime = DateTime(2017, 9, 7, 9, 30);
-  DateTime? bedTime = DateTime(2017, 9, 7, 22, 30);
-  SingingCharacter? _character = SingingCharacter.male;
   final format = DateFormat("hh:mm a");
+  final _formKey = GlobalKey<FormState>();
+  late SingingCharacter? character = (widget.gender == 'Male')
+      ? SingingCharacter.male
+      : SingingCharacter.female;
+  late var wakeTime1 = widget.waketime;
+  late var bedTime1 = widget.bedtime;
+  callback1(varTopic) {
+    setState(() {
+      wakeTime1 = varTopic;
+    });
+  }
+
+  callback2(varTopic) {
+    setState(() {
+      bedTime1 = varTopic;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +62,36 @@ class _SettingsPageState extends State<SettingsPage> {
         centerTitle: true,
       ),
       backgroundColor: const Color.fromARGB(255, 241, 247, 249),
-      body: SingleChildScrollView(
+      body: StreamBuilder<List<User>>(
+        stream: readUsers(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Text('${snapshot.data}');
+          }
+          if (snapshot.hasData) {
+            final users = snapshot.data!;
+            return ListView(children: users.map(buildUser).toList());
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  Widget buildUser(User user) {
+    DateTime? tempWakeTime = user.wakeTime;
+    DateTime? tempBedTime = user.bedTime;
+    final weightctrl = TextEditingController(text: '${user.weight}');
+    final waterctrl = TextEditingController(text: '${user.waterIntake}');
+
+    return SingleChildScrollView(
+      child: Form(
+        key: _formKey,
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -70,11 +125,9 @@ class _SettingsPageState extends State<SettingsPage> {
                           Container(
                             margin: const EdgeInsets.symmetric(horizontal: 20),
                             child: TextFormField(
+                              keyboardType: TextInputType.number,
                               controller: weightctrl,
                               decoration: InputDecoration(
-                                labelText: 'Enter your weight: ',
-                                labelStyle:
-                                    const TextStyle(color: Colors.black),
                                 enabledBorder: OutlineInputBorder(
                                   borderSide: const BorderSide(
                                     width: 2,
@@ -89,6 +142,13 @@ class _SettingsPageState extends State<SettingsPage> {
                                   ),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
+                                border: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                      width: 2, color: Colors.green),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                errorStyle: const TextStyle(
+                                    color: Colors.redAccent, fontSize: 14),
                                 suffixIcon: const Padding(
                                   padding: EdgeInsets.only(left: 10, top: 13),
                                   child: Text(
@@ -100,6 +160,12 @@ class _SettingsPageState extends State<SettingsPage> {
                                   ),
                                 ),
                               ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your weight';
+                                }
+                                return null;
+                              },
                             ),
                           ),
                           const SizedBox(
@@ -112,7 +178,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               const SizedBox(
-                height: 20,
+                height: 10,
               ),
               Container(
                 color: Colors.white,
@@ -122,13 +188,11 @@ class _SettingsPageState extends State<SettingsPage> {
                       title: const Text('Male'),
                       leading: Radio<SingingCharacter>(
                         value: SingingCharacter.male,
-                        groupValue: _character,
+                        groupValue: character,
                         onChanged: (SingingCharacter? value) {
-                          setState(
-                            () {
-                              _character = value;
-                            },
-                          );
+                          setState(() {
+                            character = value;
+                          });
                         },
                       ),
                     ),
@@ -136,10 +200,10 @@ class _SettingsPageState extends State<SettingsPage> {
                       title: const Text('Female'),
                       leading: Radio<SingingCharacter>(
                         value: SingingCharacter.female,
-                        groupValue: _character,
+                        groupValue: character,
                         onChanged: (SingingCharacter? value) {
                           setState(() {
-                            _character = value;
+                            character = value;
                           });
                         },
                       ),
@@ -148,7 +212,88 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               const SizedBox(
-                height: 20,
+                height: 10,
+              ),
+              Container(
+                color: Colors.white,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.only(
+                        left: 25,
+                      ),
+                      child: const Padding(
+                        padding: EdgeInsets.only(
+                          bottom: 5,
+                        ),
+                        child: Text(
+                          'Water In-Take',
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 79, 168, 197),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 20),
+                            child: TextFormField(
+                              keyboardType: TextInputType.number,
+                              controller: waterctrl,
+                              decoration: InputDecoration(
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    width: 2,
+                                    color: Color.fromARGB(255, 79, 168, 197),
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    width: 2,
+                                    color: Color.fromARGB(255, 79, 168, 197),
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                      width: 2, color: Colors.green),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                errorStyle: const TextStyle(
+                                    color: Colors.redAccent, fontSize: 14),
+                                suffixIcon: const Padding(
+                                  padding: EdgeInsets.only(left: 10, top: 13),
+                                  child: Text(
+                                    'ml',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Please enter your daily water in-take in 'ml'";
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
               Container(
                 color: Colors.white,
@@ -159,26 +304,26 @@ class _SettingsPageState extends State<SettingsPage> {
                       textcolor: Color.fromARGB(255, 79, 168, 197),
                     ),
                     BuildTime(
-                      format: format,
-                      context: context,
-                      time: 'Wakeup',
-                      tempTime: wakeTime,
-                    ),
+                        format: format,
+                        context: context,
+                        time: 'Wakeup',
+                        tempTime: tempWakeTime,
+                        callbackFunction: callback1),
                     const BuildPadding(
                       text: 'Bed Time',
                       textcolor: Color.fromARGB(255, 79, 168, 197),
                     ),
                     BuildTime(
-                      format: format,
-                      context: context,
-                      time: 'Bed',
-                      tempTime: bedTime,
-                    ),
+                        format: format,
+                        context: context,
+                        time: 'Bed',
+                        tempTime: tempBedTime,
+                        callbackFunction: callback2),
                   ],
                 ),
               ),
               const SizedBox(
-                height: 40,
+                height: 30,
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -189,13 +334,42 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   minimumSize: const Size(325, 45),
                 ),
-                onPressed: () => {
-                  // Navigator.of(context).pushAndRemoveUntil(
-                  //     MaterialPageRoute(
-                  //         builder: (context) => const GenderPage(
-                  //               title: 'title',
-                  //             )),
-                  //     (Route<dynamic> route) => false),
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    setState(
+                      () {
+                        final docUser = FirebaseFirestore.instance
+                            .collection('Default-User')
+                            .doc('user1');
+                        switch (character) {
+                          case SingingCharacter.male:
+                            {
+                              docUser.update({
+                                'weight': int.parse(weightctrl.text),
+                                'gender': 'Male',
+                                'wakeTime': wakeTime1,
+                                'bedTime': bedTime1,
+                                'waterIntake': int.parse(waterctrl.text)
+                              });
+                              return;
+                            }
+                          case SingingCharacter.female:
+                            {
+                              docUser.update({
+                                'weight': int.parse(weightctrl.text),
+                                'gender': 'Female',
+                                'wakeTime': wakeTime1,
+                                'bedTime': bedTime1,
+                                'waterIntake': int.parse(waterctrl.text)
+                              });
+                              return;
+                            }
+                          default:
+                            break;
+                        }
+                      },
+                    );
+                  }
                 },
                 child: const Text(
                   "SAVE",
@@ -210,4 +384,10 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
     );
   }
+
+  Stream<List<User>> readUsers() => FirebaseFirestore.instance
+      .collection('Default-User')
+      .snapshots()
+      .map((snapshot) =>
+          snapshot.docs.map((doc) => User.fromJson(doc.data())).toList());
 }

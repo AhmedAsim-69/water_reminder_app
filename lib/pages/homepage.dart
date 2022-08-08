@@ -4,42 +4,47 @@ import 'package:water_reminder/pages/settings.dart';
 import 'dashboard.dart';
 
 class Homepage extends StatefulWidget {
-  const Homepage({Key? key}) : super(key: key);
+  const Homepage(
+      {Key? key,
+      required this.bedtime,
+      required this.waketime,
+      required this.gender})
+      : super(key: key);
+  final DateTime? bedtime;
+  final DateTime? waketime;
+  final String gender;
 
   @override
   State<Homepage> createState() => _HomepageState();
 }
 
 class _HomepageState extends State<Homepage> {
+  late var wakeTime2 = widget.waketime;
+  late var bedTime2 = widget.bedtime;
+  late var gender1 = widget.gender;
   final editingController = TextEditingController();
-  int _selectedIndex = 0;
-  static List<Widget> widgetOptions = <Widget>[
-    const Dashboard(
-      title: 'title',
-    ),
-    const SettingsPage(title: 'title'),
-  ];
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
 
+  int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
+    List<Widget> widgetOptions = <Widget>[
+      const Dashboard(
+        title: 'title',
+      ),
+      SettingsPage(
+          title: 'title',
+          waketime: wakeTime2,
+          bedtime: bedTime2,
+          gender: gender1),
+    ];
+    void _onItemTapped(int index) {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 241, 247, 249),
-      // appBar: AppBar(
-      //   backgroundColor: const Color.fromARGB(255, 79, 168, 197),
-      //   title: const Text(
-      //     "Water Reminder",
-      //     textScaleFactor: 1,
-      //     style: TextStyle(
-      //       color: Colors.black,
-      //     ),
-      //   ),
-      //   centerTitle: true,
-      // ),
       body: widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Theme.of(context).primaryColor,

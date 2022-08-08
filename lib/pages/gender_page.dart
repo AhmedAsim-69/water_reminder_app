@@ -23,55 +23,55 @@ class _GenderPageState extends State<GenderPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 241, 247, 249),
-      body: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.only(top: 180),
-            alignment: Alignment.center,
-            child: const Text(
-              'GENDER',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Color.fromARGB(255, 79, 168, 197),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.only(top: 180),
+              alignment: Alignment.center,
+              child: const Text(
+                'GENDER',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 79, 168, 197),
+                ),
               ),
             ),
-          ),
-          Center(
-            heightFactor: 2.8,
-            // widthFactor: 9,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                ListTile(
-                  title: const Text('Male'),
-                  leading: Radio<SingingCharacter>(
-                    value: SingingCharacter.male,
-                    groupValue: character,
-                    onChanged: (SingingCharacter? value) {
-                      setState(() {
-                        character = value;
-                      });
-                    },
+            Center(
+              heightFactor: 2.8,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  ListTile(
+                    title: const Text('Male'),
+                    leading: Radio<SingingCharacter>(
+                      value: SingingCharacter.male,
+                      groupValue: character,
+                      onChanged: (SingingCharacter? value) {
+                        setState(() {
+                          character = value;
+                        });
+                      },
+                    ),
                   ),
-                ),
-                ListTile(
-                  title: const Text('Female'),
-                  leading: Radio<SingingCharacter>(
-                    value: SingingCharacter.female,
-                    groupValue: character,
-                    onChanged: (SingingCharacter? value) {
-                      setState(() {
-                        character = value;
-                      });
-                    },
+                  ListTile(
+                    title: const Text('Female'),
+                    leading: Radio<SingingCharacter>(
+                      value: SingingCharacter.female,
+                      groupValue: character,
+                      onChanged: (SingingCharacter? value) {
+                        setState(() {
+                          character = value;
+                        });
+                      },
+                    ),
                   ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                ElevatedButton(
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       primary: const Color.fromARGB(255, 79, 168, 197),
                       elevation: 3,
@@ -89,7 +89,7 @@ class _GenderPageState extends State<GenderPage> {
                                     builder: (context) => SleepCyclePage(
                                           title: 'title',
                                           weight: widget.weight,
-                                          gender: 'Female',
+                                          gender: 'Male',
                                         )),
                                 (Route<dynamic> route) => false);
                             return;
@@ -110,24 +110,19 @@ class _GenderPageState extends State<GenderPage> {
                         default:
                           break;
                       }
-
-                      // Navigator.of(context).pushAndRemoveUntil(
-                      //     MaterialPageRoute(
-                      //         builder: (context) => const SleepCyclePage(
-                      //               title: 'title',
-                      //             )),
-                      //     (Route<dynamic> route) => false);
                     },
                     child: const Text(
                       "CONTINUE",
                       style: TextStyle(
                         fontSize: 24,
                       ),
-                    ))
-              ],
-            ),
-          )
-        ],
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

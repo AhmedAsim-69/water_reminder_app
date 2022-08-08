@@ -170,7 +170,8 @@ Future createUser({
   DateTime? bedTime,
   int? waterIntake,
 }) async {
-  final docUser = FirebaseFirestore.instance.collection('user').doc('user1');
+  final docUser =
+      FirebaseFirestore.instance.collection('Default-User').doc('user1');
 
   final json = {
     'weight': weight,
@@ -183,19 +184,34 @@ Future createUser({
   await docUser.set(json);
 }
 
-Future updateUser(
-    {int? weight,
-    String? gender,
-    DateTime? wakeTime,
-    DateTime? bedTime}) async {
-  final docUser = FirebaseFirestore.instance.collection('user').doc('user1');
+class User {
+  int? weight;
+  String? gender;
+  DateTime? wakeTime;
+  DateTime? bedTime;
+  int? waterIntake;
 
-  final json = {
-    'weight': weight,
-    'gender': gender,
-    'bedTime': bedTime,
-    'wakeTime': wakeTime,
-  };
+  User({
+    required this.weight,
+    required this.gender,
+    required this.wakeTime,
+    required this.bedTime,
+    required this.waterIntake,
+  });
 
-  await docUser.set(json);
+  Map<String, dynamic> toJson() => {
+        'weight': weight,
+        'gender': gender,
+        'bedTime': bedTime,
+        'wakeTime': wakeTime,
+        'waterIntake': waterIntake,
+      };
+
+  static User fromJson(Map<String, dynamic> json) => User(
+        weight: json['weight'],
+        gender: json['gender'],
+        wakeTime: (json['wakeTime'] as Timestamp).toDate(),
+        bedTime: (json['bedTime'] as Timestamp).toDate(),
+        waterIntake: json['waterIntake'],
+      );
 }

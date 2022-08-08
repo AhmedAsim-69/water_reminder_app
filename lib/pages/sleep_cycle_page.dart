@@ -1,5 +1,6 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
-// import 'package:water_reminder/pages/gender_page.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
 import 'package:water_reminder/pages/water_intake.dart';
@@ -26,8 +27,23 @@ class _SleepCyclePageState extends State<SleepCyclePage> {
   final format = DateFormat("hh:mm a");
   late var weight1 = widget.weight;
   late var gender1 = widget.gender;
+  DateTime? tempWakeTime = DateTime(2017, 9, 7, 9, 30);
+  DateTime? tempBedTime = DateTime(2017, 9, 7, 22, 30);
+
   DateTime? wakeTime = DateTime(2017, 9, 7, 9, 30);
   DateTime? bedTime = DateTime(2017, 9, 7, 22, 30);
+  callback1(varTopic) {
+    setState(() {
+      wakeTime = varTopic;
+    });
+  }
+
+  callback2(varTopic) {
+    setState(() {
+      bedTime = varTopic;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,7 +81,8 @@ class _SleepCyclePageState extends State<SleepCyclePage> {
                         format: format,
                         context: context,
                         time: 'Wakeup',
-                        tempTime: wakeTime),
+                        tempTime: tempWakeTime,
+                        callbackFunction: callback1),
                     const BuildPadding(
                       text: 'Bed Time',
                       textcolor: Color.fromARGB(255, 97, 97, 97),
@@ -74,7 +91,8 @@ class _SleepCyclePageState extends State<SleepCyclePage> {
                         format: format,
                         context: context,
                         time: 'Bed',
-                        tempTime: bedTime),
+                        tempTime: tempBedTime,
+                        callbackFunction: callback2),
                     const SizedBox(
                       height: 20,
                     ),
@@ -87,6 +105,7 @@ class _SleepCyclePageState extends State<SleepCyclePage> {
                         minimumSize: const Size(325, 45),
                       ),
                       onPressed: () {
+                        log('wake $wakeTime       bed $bedTime');
                         createUser(
                             weight: widget.weight,
                             gender: widget.gender,
@@ -125,12 +144,15 @@ class _SleepCyclePageState extends State<SleepCyclePage> {
 class BuildTime extends StatelessWidget {
   final String time;
   final DateTime? tempTime;
+  final Function callbackFunction;
+
   const BuildTime({
     Key? key,
     required this.format,
     required this.context,
     required this.time,
     required this.tempTime,
+    required this.callbackFunction,
   }) : super(key: key);
 
   final DateFormat format;
@@ -163,7 +185,7 @@ class BuildTime extends StatelessWidget {
           ),
         ),
         format: format,
-        initialValue: tempTime, //Add this in your Code.
+        initialValue: tempTime,
         validator: (val) {
           if (val != null) {
             return null;
@@ -176,8 +198,10 @@ class BuildTime extends StatelessWidget {
             context: context,
             initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
           );
-
           return DateTimeField.convert(time);
+        },
+        onChanged: (value) {
+          callbackFunction(value);
         },
       ),
     );
