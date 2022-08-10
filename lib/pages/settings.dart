@@ -1,9 +1,6 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:water_reminder/pages/gender_page.dart';
+
 import 'package:water_reminder/pages/sleep_cycle_page.dart';
 import 'package:intl/intl.dart';
 import 'package:water_reminder/pages/weight_page.dart';

@@ -1,19 +1,25 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'package:water_reminder/pages/weight_page.dart';
+import 'package:water_reminder/pages/splashscreen.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
-  MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -32,17 +38,12 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'Flutter Demo',
           theme: ThemeData(
-            // fontFamily: 'GoogleFonts.openSans().fontFamily',
             textTheme: GoogleFonts.openSansTextTheme(
               Theme.of(context).textTheme,
             ),
             primaryColor: const Color.fromARGB(255, 79, 168, 197),
           ),
-          home: const WeightPage(title: "title"),
-          // home: Homepage(
-          //   bedtime: DateTime.now(),
-          //   waketime: DateTime.now(),
-          // ),
+          home: const SplashScreen(),
         );
       },
     );
