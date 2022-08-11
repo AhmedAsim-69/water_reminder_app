@@ -105,7 +105,6 @@ class _SleepCyclePageState extends State<SleepCyclePage> {
                         minimumSize: const Size(325, 45),
                       ),
                       onPressed: () {
-                        log('wake $wakeTime       bed $bedTime');
                         createUser(
                             weight: widget.weight,
                             gender: widget.gender,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:water_reminder/pages/settings.dart';
 
-import 'dashboard.dart';
+import 'home.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage(
@@ -28,7 +28,7 @@ class _HomepageState extends State<Homepage> {
   @override
   Widget build(BuildContext context) {
     List<Widget> widgetOptions = <Widget>[
-      const Dashboard(
+      const Home(
         title: 'title',
       ),
       SettingsPage(
