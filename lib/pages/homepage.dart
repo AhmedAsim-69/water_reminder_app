@@ -1,7 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:water_reminder/pages/settings.dart';
 
+import 'package:water_reminder/pages/settings.dart';
 import 'home.dart';
 
 class Homepage extends StatefulWidget {

@@ -1,8 +1,10 @@
-import 'dart:developer';
+// ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+
 import 'package:intl/intl.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+
 import 'package:water_reminder/pages/water_intake.dart';
 import 'package:water_reminder/pages/weight_page.dart';
 
@@ -158,7 +160,6 @@ class BuildTime extends StatelessWidget {
 
   final DateFormat format;
   final BuildContext context;
-  // bool flag = false;
 
   @override
   Widget build(BuildContext context) {

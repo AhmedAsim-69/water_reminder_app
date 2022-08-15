@@ -1,10 +1,7 @@
-import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
-import 'package:water_reminder/pages/sleep_cycle_page.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key, required this.title}) : super(key: key);
@@ -22,7 +19,6 @@ class _HomeState extends State<Home> {
   TimeOfDay setTime = TimeOfDay.now();
   int intake = 1;
 
-  // double val = (times.length) / 2600;
   @override
   void initState() {
     times = [];
@@ -333,9 +329,9 @@ class _HomeState extends State<Home> {
     times.removeAt(index);
     List<String> tempTimes = [];
 
-    times.forEach((item) {
+    for (var item in times) {
       tempTimes.add(item.format(context));
-    });
+    }
     FirebaseFirestore.instance
         .collection('Default-User-Water')
         .doc('user1')
