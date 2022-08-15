@@ -25,8 +25,8 @@ class _HomeState extends State<Home> {
   // double val = (times.length) / 2600;
   @override
   void initState() {
+    times = [];
     getdata();
-    log('$times');
     getintake();
     super.initState();
   }
@@ -34,8 +34,6 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     double val = (times.length) / intake * 250;
-    // getintake(intake);
-    // log('$intake vsdfs');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 241, 247, 249),
@@ -192,7 +190,9 @@ class _HomeState extends State<Home> {
                                 minimumSize: const Size(325, 45),
                               ),
                               onPressed: () {
-                                _selectTime(context);
+                                (times.length * 250 >= intake)
+                                    ? snackbar("You have achieved today's goal")
+                                    : _selectTime(context);
                               },
                               icon: const Icon(
                                 Icons.add_sharp,
@@ -314,14 +314,13 @@ class _HomeState extends State<Home> {
     if (picked != null && picked != setTime) {
       setState(() {
         setTime = picked;
-        log('$index xxxxxxxx');
         (index == null) ? _addItemToList(setTime) : times[index] = setTime;
 
         List<String> tempTimes = [];
 
-        times.forEach((item) {
+        for (var item in times) {
           tempTimes.add(item.format(context));
-        });
+        }
         FirebaseFirestore.instance
             .collection('Default-User-Water')
             .doc('user1')
@@ -400,12 +399,7 @@ class _HomeState extends State<Home> {
       setState(() {
         for (var element in List.from(value['user1'])) {
           TimeOfDay data = TimeOfDay.fromDateTime(format.parse(element));
-          // TimeOfDay data = TimeOfDay(
-          //     hour: int.parse(element.split(":")[0]),
-          //     minute: int.parse(element.split(":")[1]));
-
           times.add(data);
-          log('$times');
         }
       });
     });
@@ -417,9 +411,26 @@ class _HomeState extends State<Home> {
     collectionReference.doc('user1').get().then((value) {
       setState(() {
         intake = (value)['waterIntake'];
-        log('$intake getdataintake');
       });
     });
     return intake;
+  }
+
+  ScaffoldFeatureController<SnackBar, SnackBarClosedReason> snackbar(
+      String msg) {
+    return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: const Color.fromARGB(255, 104, 176, 200),
+        content: Text(
+          msg,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+          textAlign: TextAlign.center,
+          textScaleFactor: 1,
+        ),
+      ),
+    );
   }
 }

@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:water_reminder/pages/reminder_page.dart';
 
 import 'package:water_reminder/pages/sleep_cycle_page.dart';
 import 'package:intl/intl.dart';
@@ -26,26 +27,22 @@ class SettingsPage extends StatefulWidget {
 
 enum SingingCharacter { male, female }
 
-// bool flagWeight = false;
-// bool flagWeight = false;
 bool flagGender = false;
 bool flagBedTime = false;
 bool flagWakeTime = false;
 
 class _SettingsPageState extends State<SettingsPage> {
-  String Gender = '';
+  String tempGender = '';
   CollectionReference collectionReference =
       FirebaseFirestore.instance.collection('Default-User');
   final format = DateFormat("hh:mm a");
   final _formKey = GlobalKey<FormState>();
-  late SingingCharacter? character = (Gender == 'SingingCharacter.male')
-      ? SingingCharacter.male
-      : SingingCharacter.female;
+  SingingCharacter? character = SingingCharacter.male;
   late var wakeTime1 = widget.waketime;
   late var bedTime1 = widget.bedtime;
   @override
   void initState() {
-    getData(Gender);
+    getData(tempGender);
     super.initState();
   }
 
@@ -133,62 +130,60 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                       ),
                     ),
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 20),
-                            child: TextFormField(
-                              keyboardType: TextInputType.number,
-                              controller: weightctrl,
-                              decoration: InputDecoration(
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                    width: 2,
-                                    color: Color.fromARGB(255, 79, 168, 197),
-                                  ),
-                                  borderRadius: BorderRadius.circular(8),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 20),
+                          child: TextFormField(
+                            keyboardType: TextInputType.number,
+                            controller: weightctrl,
+                            decoration: InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  width: 2,
+                                  color: Color.fromARGB(255, 79, 168, 197),
                                 ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                    width: 2,
-                                    color: Color.fromARGB(255, 79, 168, 197),
-                                  ),
-                                  borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  width: 2,
+                                  color: Color.fromARGB(255, 79, 168, 197),
                                 ),
-                                border: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                      width: 2, color: Colors.green),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                errorStyle: const TextStyle(
-                                    color: Colors.redAccent, fontSize: 14),
-                                suffixIcon: const Padding(
-                                  padding: EdgeInsets.only(left: 10, top: 13),
-                                  child: Text(
-                                    'Kg',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16,
-                                    ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              border: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                    width: 2, color: Colors.green),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              errorStyle: const TextStyle(
+                                  color: Colors.redAccent, fontSize: 14),
+                              suffixIcon: const Padding(
+                                padding: EdgeInsets.only(left: 10, top: 13),
+                                child: Text(
+                                  'Kg',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 16,
                                   ),
                                 ),
                               ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your weight';
-                                }
-                                return null;
-                              },
                             ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your weight';
+                              }
+                              return null;
+                            },
                           ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -233,87 +228,6 @@ class _SettingsPageState extends State<SettingsPage> {
               Container(
                 color: Colors.white,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.only(
-                        left: 25,
-                      ),
-                      child: const Padding(
-                        padding: EdgeInsets.only(
-                          bottom: 5,
-                        ),
-                        child: Text(
-                          'Water In-Take',
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 79, 168, 197),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 20),
-                            child: TextFormField(
-                              keyboardType: TextInputType.number,
-                              controller: waterctrl,
-                              decoration: InputDecoration(
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                    width: 2,
-                                    color: Color.fromARGB(255, 79, 168, 197),
-                                  ),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                    width: 2,
-                                    color: Color.fromARGB(255, 79, 168, 197),
-                                  ),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                border: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                      width: 2, color: Colors.green),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                errorStyle: const TextStyle(
-                                    color: Colors.redAccent, fontSize: 14),
-                                suffixIcon: const Padding(
-                                  padding: EdgeInsets.only(left: 10, top: 13),
-                                  child: Text(
-                                    'ml',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return "Please enter your daily water in-take in 'ml'";
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                color: Colors.white,
-                child: Column(
                   children: [
                     const BuildPadding(
                       text: 'Wakeup Time',
@@ -338,11 +252,108 @@ class _SettingsPageState extends State<SettingsPage> {
                       callbackFunction: callback2,
                       flag: flagBedTime,
                     ),
+                    const SizedBox(
+                      height: 20,
+                    ),
                   ],
                 ),
               ),
               const SizedBox(
-                height: 30,
+                height: 10,
+              ),
+              Container(
+                color: Colors.white,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.only(
+                        left: 25,
+                      ),
+                      child: const Padding(
+                        padding: EdgeInsets.only(
+                          bottom: 5,
+                        ),
+                        child: Text(
+                          'Water In-Take',
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 79, 168, 197),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 20),
+                          child: TextFormField(
+                            keyboardType: TextInputType.number,
+                            controller: waterctrl,
+                            decoration: InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  width: 2,
+                                  color: Color.fromARGB(255, 79, 168, 197),
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  width: 2,
+                                  color: Color.fromARGB(255, 79, 168, 197),
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              border: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                    width: 2, color: Colors.green),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              errorStyle: const TextStyle(
+                                  color: Colors.redAccent, fontSize: 14),
+                              suffixIcon: const Padding(
+                                padding: EdgeInsets.only(left: 10, top: 13),
+                                child: Text(
+                                  'ml',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Please enter your daily water in-take in 'ml'";
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => const ReminderPage(
+                                      title: 'title',
+                                    )));
+                          },
+                          child: const Text(
+                            'Reminder Schedule',
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 79, 168, 197),
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 10,
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -373,28 +384,20 @@ class _SettingsPageState extends State<SettingsPage> {
                           'gender': '$character',
                           'waterIntake': int.parse(waterctrl.text)
                         });
-                        // switch (character) {
-                        //   case SingingCharacter.male:
-                        //     {
-                        //       docUser.update({
-                        //         'weight': int.parse(weightctrl.text),
-                        //         'gender': 'Male',
-                        //         'waterIntake': int.parse(waterctrl.text)
-                        //       });
-                        //       return;
-                        //     }
-                        //   case SingingCharacter.female:
-                        //     {
-                        //       docUser.update({
-                        //         'weight': int.parse(weightctrl.text),
-                        //         'gender': 'Female',
-                        //         'waterIntake': int.parse(waterctrl.text)
-                        //       });
-                        //       return;
-                        //     }
-                        //   default:
-                        //     break;
-                        // }
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            backgroundColor: Color.fromARGB(255, 104, 176, 200),
+                            content: Text(
+                              ('Changes Saved'),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                              textAlign: TextAlign.center,
+                              textScaleFactor: 1,
+                            ),
+                          ),
+                        );
                       },
                     );
                   }
@@ -423,7 +426,11 @@ class _SettingsPageState extends State<SettingsPage> {
     collectionReference.doc('user1').get().then((value) {
       setState(() {
         gender = (value)['gender'];
-        log(gender);
+        character = (gender == 'SingingCharacter.male')
+            ? SingingCharacter.male
+            : SingingCharacter.female;
+        // log(gender);
+        // log('dsdjisjdis $character');
       });
     });
   }
