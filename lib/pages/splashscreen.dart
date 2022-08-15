@@ -24,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
-    getData();
+    getData(gender);
     checkstate();
     super.initState();
 
@@ -36,7 +36,7 @@ class _SplashScreenState extends State<SplashScreen> {
           builder: (context) => (flag == true)
               ? Homepage(
                   bedtime: bedTime,
-                  gender: '',
+                  gender: gender,
                   waketime: wakeTime,
                 )
               : const WeightPage(
@@ -85,7 +85,7 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 
-  void getData() {
+  void getData(String gender) {
     collectionReference.doc('user1').get().then((value) {
       setState(() {
         gender = (value)['gender'];

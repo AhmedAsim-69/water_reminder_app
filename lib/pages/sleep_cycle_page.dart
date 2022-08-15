@@ -144,18 +144,21 @@ class BuildTime extends StatelessWidget {
   final String time;
   final DateTime? tempTime;
   final Function callbackFunction;
+  bool? flag;
 
-  const BuildTime({
+  BuildTime({
     Key? key,
     required this.format,
     required this.context,
     required this.time,
     required this.tempTime,
     required this.callbackFunction,
+    this.flag,
   }) : super(key: key);
 
   final DateFormat format;
   final BuildContext context;
+  // bool flag = false;
 
   @override
   Widget build(BuildContext context) {
@@ -197,10 +200,13 @@ class BuildTime extends StatelessWidget {
             context: context,
             initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
           );
+          flag = true;
+
           return DateTimeField.convert(time);
         },
         onChanged: (value) {
           callbackFunction(value);
+          flag = true;
         },
       ),
     );

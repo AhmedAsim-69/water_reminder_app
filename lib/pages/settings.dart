@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -24,23 +26,40 @@ class SettingsPage extends StatefulWidget {
 
 enum SingingCharacter { male, female }
 
+// bool flagWeight = false;
+// bool flagWeight = false;
+bool flagGender = false;
+bool flagBedTime = false;
+bool flagWakeTime = false;
+
 class _SettingsPageState extends State<SettingsPage> {
+  String Gender = '';
+  CollectionReference collectionReference =
+      FirebaseFirestore.instance.collection('Default-User');
   final format = DateFormat("hh:mm a");
   final _formKey = GlobalKey<FormState>();
-  late SingingCharacter? character = (widget.gender == 'Male')
+  late SingingCharacter? character = (Gender == 'SingingCharacter.male')
       ? SingingCharacter.male
       : SingingCharacter.female;
   late var wakeTime1 = widget.waketime;
   late var bedTime1 = widget.bedtime;
+  @override
+  void initState() {
+    getData(Gender);
+    super.initState();
+  }
+
   callback1(varTopic) {
     setState(() {
       wakeTime1 = varTopic;
+      flagWakeTime = true;
     });
   }
 
   callback2(varTopic) {
     setState(() {
       bedTime1 = varTopic;
+      flagBedTime = true;
     });
   }
 
@@ -63,7 +82,7 @@ class _SettingsPageState extends State<SettingsPage> {
         stream: readUsers(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Text('${snapshot.data}');
+            return Text('${snapshot.data} 12345678');
           }
           if (snapshot.hasData) {
             final users = snapshot.data!;
@@ -305,17 +324,20 @@ class _SettingsPageState extends State<SettingsPage> {
                         context: context,
                         time: 'Wakeup',
                         tempTime: tempWakeTime,
-                        callbackFunction: callback1),
+                        callbackFunction: callback1,
+                        flag: flagWakeTime),
                     const BuildPadding(
                       text: 'Bed Time',
                       textcolor: Color.fromARGB(255, 79, 168, 197),
                     ),
                     BuildTime(
-                        format: format,
-                        context: context,
-                        time: 'Bed',
-                        tempTime: tempBedTime,
-                        callbackFunction: callback2),
+                      format: format,
+                      context: context,
+                      time: 'Bed',
+                      tempTime: tempBedTime,
+                      callbackFunction: callback2,
+                      flag: flagBedTime,
+                    ),
                   ],
                 ),
               ),
@@ -338,32 +360,41 @@ class _SettingsPageState extends State<SettingsPage> {
                         final docUser = FirebaseFirestore.instance
                             .collection('Default-User')
                             .doc('user1');
-                        switch (character) {
-                          case SingingCharacter.male:
-                            {
-                              docUser.update({
-                                'weight': int.parse(weightctrl.text),
-                                'gender': 'Male',
-                                'wakeTime': wakeTime1,
-                                'bedTime': bedTime1,
-                                'waterIntake': int.parse(waterctrl.text)
-                              });
-                              return;
-                            }
-                          case SingingCharacter.female:
-                            {
-                              docUser.update({
-                                'weight': int.parse(weightctrl.text),
-                                'gender': 'Female',
-                                'wakeTime': wakeTime1,
-                                'bedTime': bedTime1,
-                                'waterIntake': int.parse(waterctrl.text)
-                              });
-                              return;
-                            }
-                          default:
-                            break;
+                        if (flagBedTime) {
+                          docUser.update({'bedTime': bedTime1});
+                          flagBedTime = false;
                         }
+                        if (flagWakeTime) {
+                          docUser.update({'bedTime': wakeTime1});
+                          flagWakeTime = false;
+                        }
+                        docUser.update({
+                          'weight': int.parse(weightctrl.text),
+                          'gender': '$character',
+                          'waterIntake': int.parse(waterctrl.text)
+                        });
+                        // switch (character) {
+                        //   case SingingCharacter.male:
+                        //     {
+                        //       docUser.update({
+                        //         'weight': int.parse(weightctrl.text),
+                        //         'gender': 'Male',
+                        //         'waterIntake': int.parse(waterctrl.text)
+                        //       });
+                        //       return;
+                        //     }
+                        //   case SingingCharacter.female:
+                        //     {
+                        //       docUser.update({
+                        //         'weight': int.parse(weightctrl.text),
+                        //         'gender': 'Female',
+                        //         'waterIntake': int.parse(waterctrl.text)
+                        //       });
+                        //       return;
+                        //     }
+                        //   default:
+                        //     break;
+                        // }
                       },
                     );
                   }
@@ -387,4 +418,13 @@ class _SettingsPageState extends State<SettingsPage> {
       .snapshots()
       .map((snapshot) =>
           snapshot.docs.map((doc) => User.fromJson(doc.data())).toList());
+
+  void getData(String gender) {
+    collectionReference.doc('user1').get().then((value) {
+      setState(() {
+        gender = (value)['gender'];
+        log(gender);
+      });
+    });
+  }
 }

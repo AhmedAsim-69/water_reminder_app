@@ -1,4 +1,5 @@
-import 'dart:math';
+import 'dart:developer';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
 
@@ -14,19 +15,27 @@ class Home extends StatefulWidget {
   State<Home> createState() => _HomeState();
 }
 
+List<TimeOfDay> times = [];
+
 class _HomeState extends State<Home> {
   final format = DateFormat("hh:mm a");
-  List<TimeOfDay?> times = [];
-  TimeOfDay? setTime = TimeOfDay.now();
-  // DateTime setTime = DateTime.now();
-  // callback(varTopic) {
-  //   setState(() {
-  //     setTime = varTopic;
-  //   });
-  // }
+  TimeOfDay setTime = TimeOfDay.now();
+  int intake = 1;
+
+  // double val = (times.length) / 2600;
+  @override
+  void initState() {
+    getdata();
+    log('$times');
+    getintake();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    double val = (times.length) / intake * 250;
+    // getintake(intake);
+    // log('$intake vsdfs');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 241, 247, 249),
@@ -81,69 +90,6 @@ class _HomeState extends State<Home> {
               Container(
                 alignment: Alignment.center,
                 margin: const EdgeInsets.all(20),
-                height: 85,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
-                    bottomLeft: Radius.circular(10),
-                    bottomRight: Radius.circular(10),
-                  ),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Column(
-                      children: const [
-                        ImageIcon(
-                          AssetImage("assets/waterglassicon.png"),
-                          color: Colors.blue,
-                          size: 40,
-                        ),
-                        Text(
-                          'Ideal Water Intake',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                        Text(
-                          '2810 ml',
-                          style: TextStyle(
-                              color: Colors.black, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 60,
-                      child: VerticalDivider(
-                        color: Color.fromARGB(255, 104, 176, 200),
-                        thickness: 2,
-                      ),
-                    ),
-                    Column(
-                      children: const [
-                        Icon(
-                          Icons.emoji_events,
-                          color: Colors.yellow,
-                          size: 40,
-                        ),
-                        Text(
-                          'Ideal Water Intake',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                        Text(
-                          '2810 ml',
-                          style: TextStyle(
-                              color: Colors.black, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                alignment: Alignment.center,
-                margin: const EdgeInsets.all(20),
                 height: 300,
                 decoration: const BoxDecoration(
                   color: Colors.white,
@@ -164,17 +110,19 @@ class _HomeState extends State<Home> {
                         bottom: 20,
                         left: 15,
                       ),
-                      child: const RotatedBox(
+                      child: RotatedBox(
                         quarterTurns: -1,
                         child: ClipRRect(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(10)),
                           child: LinearProgressIndicator(
                             minHeight: 90,
-                            value: 0.5,
-                            valueColor: AlwaysStoppedAnimation(
+                            value: val,
+                            valueColor: const AlwaysStoppedAnimation(
                               Color.fromARGB(255, 104, 176, 200),
                             ),
-                            backgroundColor: Color.fromARGB(255, 241, 247, 249),
+                            backgroundColor:
+                                const Color.fromARGB(255, 241, 247, 249),
                           ),
                         ),
                       ),
@@ -192,17 +140,17 @@ class _HomeState extends State<Home> {
                             RichText(
                               text: TextSpan(
                                 children: [
-                                  const TextSpan(
-                                    text: '800',
-                                    style: TextStyle(
+                                  TextSpan(
+                                    text: '${(times.length) * 250}',
+                                    style: const TextStyle(
                                       color: Color.fromARGB(255, 104, 176, 200),
                                       fontSize: 30,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  const TextSpan(
-                                    text: '/2600',
-                                    style: TextStyle(
+                                  TextSpan(
+                                    text: "/ $intake",
+                                    style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: Colors.black,
                                         fontSize: 30),
@@ -303,7 +251,7 @@ class _HomeState extends State<Home> {
                             child: Row(
                               children: [
                                 Text(
-                                  '${times[index]?.format(context)}',
+                                  times[index].format(context),
                                   style: const TextStyle(
                                     color: Colors.grey,
                                   ),
@@ -343,38 +291,18 @@ class _HomeState extends State<Home> {
     );
   }
 
-  _addItemToList(TimeOfDay? setTime) {
-    List<TimeOfDay?> tempList = times;
+  _addItemToList(TimeOfDay setTime) {
+    List<TimeOfDay> tempList = times;
     tempList.add(setTime);
     setState(() {
       times = tempList;
     });
   }
 
-  Future<void> _selectTime(BuildContext context) async {
-    final TimeOfDay? picked_s = await showTimePicker(
-      context: context,
-      initialTime: setTime!,
-      builder: (context, child) {
-        return MediaQuery(
-          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
-          child: child!,
-        );
-      },
-    );
-
-    if (picked_s != null && picked_s != setTime) {
-      setState(() {
-        setTime = picked_s;
-        _addItemToList(setTime);
-      });
-    }
-  }
-
-  Future<void> _editTime(BuildContext context, int index) async {
+  Future<void> _selectTime(BuildContext context, [int? index]) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: setTime!,
+      initialTime: setTime,
       builder: (context, child) {
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
@@ -386,28 +314,53 @@ class _HomeState extends State<Home> {
     if (picked != null && picked != setTime) {
       setState(() {
         setTime = picked;
-        times[index] = setTime;
+        log('$index xxxxxxxx');
+        (index == null) ? _addItemToList(setTime) : times[index] = setTime;
+
+        List<String> tempTimes = [];
+
+        times.forEach((item) {
+          tempTimes.add(item.format(context));
+        });
+        FirebaseFirestore.instance
+            .collection('Default-User-Water')
+            .doc('user1')
+            .set({"user1": tempTimes});
       });
     }
+  }
+
+  Future<void> _deleteTime(int index) async {
+    times.removeAt(index);
+    List<String> tempTimes = [];
+
+    times.forEach((item) {
+      tempTimes.add(item.format(context));
+    });
+    FirebaseFirestore.instance
+        .collection('Default-User-Water')
+        .doc('user1')
+        .set({"user1": tempTimes});
   }
 
   void handleClick(String value, int index) {
     switch (value) {
       case 'Edit':
-        _editTime(context, index);
+        _selectTime(context, index);
         break;
 
       case 'Delete':
         showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: const Text("Delete Password!"),
+            title: const Text("Delete Water Intake Time!"),
             content:
-                const Text("Are you sure you want to delete this Password?"),
+                const Text("Are you sure you want to delete this Intake Time?"),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
-                  times.removeAt(index);
+                  _deleteTime(index);
+                  setState(() {});
                   Navigator.pop(context, true);
                 },
                 child: Container(
@@ -435,5 +388,38 @@ class _HomeState extends State<Home> {
         );
         break;
     }
+  }
+
+  getdata() async {
+    final format = DateFormat.jm();
+    await FirebaseFirestore.instance
+        .collection("Default-User-Water")
+        .doc('user1')
+        .get()
+        .then((value) {
+      setState(() {
+        for (var element in List.from(value['user1'])) {
+          TimeOfDay data = TimeOfDay.fromDateTime(format.parse(element));
+          // TimeOfDay data = TimeOfDay(
+          //     hour: int.parse(element.split(":")[0]),
+          //     minute: int.parse(element.split(":")[1]));
+
+          times.add(data);
+          log('$times');
+        }
+      });
+    });
+  }
+
+  CollectionReference collectionReference =
+      FirebaseFirestore.instance.collection('Default-User');
+  int getintake() {
+    collectionReference.doc('user1').get().then((value) {
+      setState(() {
+        intake = (value)['waterIntake'];
+        log('$intake getdataintake');
+      });
+    });
+    return intake;
   }
 }
