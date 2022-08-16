@@ -1,10 +1,10 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
+import 'package:water_reminder/pages/home.dart';
+import 'package:water_reminder/pages/splashscreen.dart';
 
 class ReminderPage extends StatefulWidget {
   const ReminderPage({Key? key, required this.title}) : super(key: key);
@@ -17,18 +17,23 @@ class ReminderPage extends StatefulWidget {
 
 List<TimeOfDay> reminder = [];
 List<bool> switchValue = [];
+int intake = 0;
 
 class _ReminderPageState extends State<ReminderPage> {
   final format = DateFormat("hh:mm a");
   TimeOfDay setTime = TimeOfDay.now();
-  int intake = 0;
+  callback(varIntake) {
+    setState(() {
+      intake = varIntake;
+    });
+  }
 
   @override
   void initState() {
     reminder = [];
     switchValue = [];
     getdata();
-    getintake();
+    getData(intake, null, null, null, null, null, callback);
     super.initState();
   }
 
@@ -246,39 +251,16 @@ class _ReminderPageState extends State<ReminderPage> {
   }
 
   dynamicGeneration() {
-    log('$intake');
     if (reminder.length * 250 < intake) {
-      for (int x = 0; (x * 250) < getintake(); x++) {
+      for (int x = 0; (x * 250) < intake; x++) {
         _selectTime(context,
             TimeOfDay.fromDateTime(DateTime.now().add(Duration(hours: x))));
         if (reminder.length * 250 >= intake) break;
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Color.fromARGB(255, 104, 176, 200),
-          content: Text(
-            'You have enough reminders set, or delete some reminders to dynamically set new ones',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-            textAlign: TextAlign.center,
-            textScaleFactor: 1,
-          ),
-        ),
-      );
+      snackbar(
+          "You have enough reminders set, or delete some reminders to dynamically set new ones",
+          context);
     }
-  }
-
-  CollectionReference collectionReference =
-      FirebaseFirestore.instance.collection('Default-User');
-  int getintake() {
-    collectionReference.doc('user1').get().then((value) {
-      setState(() {
-        intake = (value)['waterIntake'];
-      });
-    });
-    return intake;
   }
 }

@@ -1,7 +1,12 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 import 'package:water_reminder/pages/settings.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
 import 'home.dart';
+import 'notification/local_notification_service.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage(
@@ -23,6 +28,36 @@ class _HomepageState extends State<Homepage> {
   late var bedTime2 = widget.bedtime;
   late var gender1 = widget.gender;
   final editingController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    LocalNotificationService.initialize(context);
+
+    FirebaseMessaging.instance.getInitialMessage().then((message) {
+      if (message != null) {
+        final routeFromMessage = message.data["route"];
+
+        Navigator.of(context).pushNamed(routeFromMessage);
+      }
+    });
+
+    FirebaseMessaging.onMessage.listen((message) {
+      if (message.notification != null) {
+        log('${message.notification!.body}');
+        log('${message.notification!.title}');
+      }
+
+      LocalNotificationService.display(message);
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      final routeFromMessage = message.data["route"];
+      log('Notification received');
+      Navigator.of(context).pushNamed(routeFromMessage);
+    });
+  }
 
   int _selectedIndex = 0;
   @override
@@ -51,8 +86,8 @@ class _HomepageState extends State<Homepage> {
         unselectedItemColor: Colors.white.withOpacity(0.7),
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.fact_check_outlined),
-            label: 'Dashboard',
+            icon: Icon(Icons.home_sharp, size: 28),
+            label: 'Home',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings, size: 28),

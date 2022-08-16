@@ -1,3 +1,4 @@
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:water_reminder/pages/homepage.dart';
@@ -13,9 +14,6 @@ class SplashScreen extends StatefulWidget {
 bool? flag;
 
 class _SplashScreenState extends State<SplashScreen> {
-  CollectionReference collectionReference =
-      FirebaseFirestore.instance.collection('Default-User');
-
   String gender = '';
   DateTime bedTime = DateTime.now();
   Timestamp stamp1 = Timestamp.now();
@@ -24,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
-    getData(gender);
+    getData(null, gender);
     checkstate();
     super.initState();
 
@@ -84,20 +82,31 @@ class _SplashScreenState extends State<SplashScreen> {
       },
     );
   }
+}
 
-  void getData(String gender) {
-    collectionReference.doc('user1').get().then((value) {
-      setState(() {
-        gender = (value)['gender'];
+CollectionReference collectionReference =
+    FirebaseFirestore.instance.collection('Default-User');
+int? getData(
+    [int? intake,
+    String? gender,
+    DateTime? bedTime,
+    Timestamp? stamp1,
+    Timestamp? stamp2,
+    DateTime? wakeTime,
+    Function? callbackfunction]) {
+  collectionReference.doc('user1').get().then((value) {
+    intake = (intake != null) ? (value)['waterIntake'] : null;
+    gender = (gender != null) ? (value)['gender'] : null;
 
-        stamp1 = (value)['bedTime'];
+    stamp1 = (stamp1 != null) ? (value)['bedTime'] : null;
 
-        bedTime = stamp1.toDate();
+    bedTime = (bedTime != null) ? stamp1!.toDate() : null;
 
-        stamp2 = (value)['bedTime'];
+    stamp2 = (stamp2 != null) ? (value)['bedTime'] : null;
 
-        wakeTime = stamp2.toDate();
-      });
-    });
-  }
+    wakeTime = (wakeTime != null) ? stamp2!.toDate() : null;
+
+    (intake == null) ? callbackfunction!(gender) : callbackfunction!(intake);
+  });
+  return intake;
 }

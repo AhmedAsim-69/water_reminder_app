@@ -169,11 +169,15 @@ class _HomeState extends State<Home> {
                                 vertical: 10,
                               ),
                               alignment: Alignment.center,
-                              child: const Expanded(
-                                child: Text(
-                                  'Your have completed this %age of your Daily Target',
-                                  style: TextStyle(fontSize: 16),
-                                ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      "Your have completed ${(times.length * 250 / intake * 100).round()}% of your Daily Target",
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                             TextButton.icon(
@@ -187,7 +191,8 @@ class _HomeState extends State<Home> {
                               ),
                               onPressed: () {
                                 (times.length * 250 >= intake)
-                                    ? snackbar("You have achieved today's goal")
+                                    ? snackbar("You have achieved today's goal",
+                                        context)
                                     : _selectTime(context);
                               },
                               icon: const Icon(
@@ -411,22 +416,22 @@ class _HomeState extends State<Home> {
     });
     return intake;
   }
+}
 
-  ScaffoldFeatureController<SnackBar, SnackBarClosedReason> snackbar(
-      String msg) {
-    return ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: const Color.fromARGB(255, 104, 176, 200),
-        content: Text(
-          msg,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-          textAlign: TextAlign.center,
-          textScaleFactor: 1,
+ScaffoldFeatureController<SnackBar, SnackBarClosedReason> snackbar(
+    String msg, BuildContext context) {
+  return ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      backgroundColor: const Color.fromARGB(255, 104, 176, 200),
+      content: Text(
+        msg,
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
         ),
+        textAlign: TextAlign.center,
+        textScaleFactor: 1,
       ),
-    );
-  }
+    ),
+  );
 }

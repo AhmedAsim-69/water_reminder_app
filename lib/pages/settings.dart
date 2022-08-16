@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:water_reminder/pages/home.dart';
 
 import 'package:water_reminder/pages/reminder_page.dart';
 import 'package:water_reminder/pages/sleep_cycle_page.dart';
+import 'package:water_reminder/pages/splashscreen.dart';
 import 'package:water_reminder/pages/weight_page.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -41,8 +43,16 @@ class _SettingsPageState extends State<SettingsPage> {
   late var bedTime1 = widget.bedtime;
   @override
   void initState() {
-    getData(tempGender);
+    getData(null, tempGender, null, null, null, null, callback);
     super.initState();
+  }
+
+  callback(varGender) {
+    setState(() {
+      character = (varGender == 'SingingCharacter.male')
+          ? SingingCharacter.male
+          : SingingCharacter.female;
+    });
   }
 
   callback1(varTopic) {
@@ -383,20 +393,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           'gender': '$character',
                           'waterIntake': int.parse(waterctrl.text)
                         });
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            backgroundColor: Color.fromARGB(255, 104, 176, 200),
-                            content: Text(
-                              ('Changes Saved'),
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                              textAlign: TextAlign.center,
-                              textScaleFactor: 1,
-                            ),
-                          ),
-                        );
+                        snackbar("Changes Saved", context);
                       },
                     );
                   }
@@ -420,17 +417,4 @@ class _SettingsPageState extends State<SettingsPage> {
       .snapshots()
       .map((snapshot) =>
           snapshot.docs.map((doc) => User.fromJson(doc.data())).toList());
-
-  void getData(String gender) {
-    collectionReference.doc('user1').get().then((value) {
-      setState(() {
-        gender = (value)['gender'];
-        character = (gender == 'SingingCharacter.male')
-            ? SingingCharacter.male
-            : SingingCharacter.female;
-        // log(gender);
-        // log('dsdjisjdis $character');
-      });
-    });
-  }
 }
