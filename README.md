@@ -4,14 +4,13 @@ A new Flutter project.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This is a ater reminder app which generates regular reminders to intake water and also keeps track of it.
 
-A few resources to get you started if this is your first Flutter project:
+On fisrt time startup, user in greeted with on-baording screens where he is requested to enter his physical/personal information like weight, gender, sleep % wake up time.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+The user is then welcomed to Homepage where he can see his progress on water intake. 
+User can add his water intake, delete existing record and also edit them.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-# water_reminder_app
+On settings screen, user can edit his personal information which he entered on on-boarding screeens.
+
+On reminder screen, user can either add reminder himself, or dynamically generate them. The app then generates notifications based on these reminders.
