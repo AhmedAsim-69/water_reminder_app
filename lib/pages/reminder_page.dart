@@ -1,9 +1,16 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 import 'package:water_reminder/pages/home.dart';
+import 'package:water_reminder/pages/homepage.dart';
+import 'package:water_reminder/pages/services/local_notification_service.dart';
 import 'package:water_reminder/pages/splashscreen.dart';
 
 class ReminderPage extends StatefulWidget {
@@ -15,16 +22,32 @@ class ReminderPage extends StatefulWidget {
   State<ReminderPage> createState() => _ReminderPageState();
 }
 
-List<TimeOfDay> reminder = [];
-List<bool> switchValue = [];
-int intake = 0;
+int reminderID = 0;
 
 class _ReminderPageState extends State<ReminderPage> {
   final format = DateFormat("hh:mm a");
   TimeOfDay setTime = TimeOfDay.now();
-  callback(varIntake) {
+  Timestamp timeStamp1 = Timestamp.now();
+  Timestamp timeStamp2 = Timestamp.now();
+  DateTime wakeTime = DateTime.now();
+  DateTime bedTime = DateTime.now();
+  TimeOfDay wakeTime1 = TimeOfDay.now();
+  TimeOfDay bedTime1 = TimeOfDay.now();
+  TimeOfDay temp = TimeOfDay.now();
+  DateTime now = DateTime.now();
+
+  final LocalNotificationService service = LocalNotificationService();
+
+  callback(varIntake, varBedTime, varWakeTime) {
     setState(() {
       intake = varIntake;
+      bedTime = varBedTime;
+      wakeTime = varWakeTime;
+      bedTime1 = TimeOfDay.fromDateTime(bedTime);
+      wakeTime1 = TimeOfDay.fromDateTime(wakeTime);
+      temp = TimeOfDay(
+          hour: (wakeTime1.hour - bedTime1.hour - 24).abs(),
+          minute: (wakeTime1.minute - bedTime1.minute - 60).abs());
     });
   }
 
@@ -32,9 +55,16 @@ class _ReminderPageState extends State<ReminderPage> {
   void initState() {
     reminder = [];
     switchValue = [];
+    service.intialize;
     getdata();
-    getData(intake, null, null, null, null, null, callback);
+    getData(intake, null, bedTime, timeStamp1, timeStamp2, wakeTime, callback);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -103,6 +133,29 @@ class _ReminderPageState extends State<ReminderPage> {
                                       onChanged: (value) {
                                         setState(() {
                                           switchValue[index] = value;
+                                          DateTime noti = DateTime(
+                                              now.year,
+                                              now.month,
+                                              now.day,
+                                              reminder[index].hour,
+                                              reminder[index].minute);
+                                          log('noti is = $noti');
+                                          if (value == false) {
+                                            log('notification removed for ${noti.hashCode.toInt()}');
+                                            flutterLocalNotificationsPlugin
+                                                .cancel(noti.hashCode.toInt());
+                                          }
+                                          if (value == true) {
+                                            service
+                                                .showScheduledNotificationWithPayload(
+                                                    id: noti.hashCode.toInt(),
+                                                    title: 'title',
+                                                    body: 'body',
+                                                    hour: 0,
+                                                    mins: 0,
+                                                    payload: 'payload',
+                                                    toSet: noti);
+                                          }
                                         });
                                         FirebaseFirestore.instance
                                             .collection('Default-User-Water')
@@ -199,17 +252,33 @@ class _ReminderPageState extends State<ReminderPage> {
         FirebaseFirestore.instance
             .collection('Default-User-Water')
             .doc('reminders')
-            .set({"reminders": tempReminder});
+            .set({"${DateTime(now.year, now.month, now.day)}": tempReminder});
 
         FirebaseFirestore.instance
             .collection('Default-User-Water')
             .doc('bool')
             .set({"switchValue": switchValue});
       });
+      if (time == null) {
+        DateTime noti =
+            DateTime(now.year, now.month, now.day, picked.hour, picked.minute);
+        service.showScheduledNotificationWithPayload(
+            id: noti.hashCode.toInt(),
+            title: 'title',
+            body: 'body',
+            hour: 0,
+            mins: 0,
+            payload: 'payload',
+            toSet: noti);
+      }
     }
   }
 
   Future<void> _deleteTime(int index) async {
+    DateTime noti = DateTime(now.year, now.month, now.day, reminder[index].hour,
+        reminder[index].minute);
+    log('Deleted id = ${noti.hashCode.toInt()}');
+    flutterLocalNotificationsPlugin.cancel(noti.hashCode.toInt());
     reminder.removeAt(index);
     switchValue.removeAt(index);
     List<String> tempReminder = [];
@@ -220,7 +289,7 @@ class _ReminderPageState extends State<ReminderPage> {
     FirebaseFirestore.instance
         .collection('Default-User-Water')
         .doc('reminders')
-        .set({"reminders": tempReminder});
+        .set({"${DateTime(now.year, now.month, now.day)}": tempReminder});
     FirebaseFirestore.instance
         .collection('Default-User-Water')
         .doc('bool')
@@ -233,7 +302,8 @@ class _ReminderPageState extends State<ReminderPage> {
 
     docUser.doc('reminders').get().then((value) {
       setState(() {
-        for (var element in List.from(value['reminders'])) {
+        for (var element
+            in List.from(value["${DateTime(now.year, now.month, now.day)}"])) {
           TimeOfDay data = TimeOfDay.fromDateTime(format.parse(element));
           reminder.add(data);
         }
@@ -243,7 +313,6 @@ class _ReminderPageState extends State<ReminderPage> {
       setState(() {
         for (var element in List.from(value['switchValue'])) {
           bool data1 = element;
-
           switchValue.add(data1);
         }
       });
@@ -251,16 +320,55 @@ class _ReminderPageState extends State<ReminderPage> {
   }
 
   dynamicGeneration() {
+    int glass = intake ~/ 250 - reminder.length;
+    int hour = temp.hour ~/ glass;
+    int min = temp.minute ~/ glass;
+    int hour1 = 0;
+    int min1 = 0;
     if (reminder.length * 250 < intake) {
-      for (int x = 0; (x * 250) < intake; x++) {
-        _selectTime(context,
-            TimeOfDay.fromDateTime(DateTime.now().add(Duration(hours: x))));
+      for (int x = 0; x <= glass; x++) {
+        _selectTime(
+            context,
+            TimeOfDay.fromDateTime(
+                wakeTime.add(Duration(hours: hour1, minutes: min1))));
+
+        DateTime noti = DateTime(
+            now.year, now.month, now.day, wakeTime.hour, wakeTime.minute);
+        DateTime noti1 = noti.add(Duration(hours: hour1 + 5, minutes: min1));
+        log('id stored = ${noti1.hashCode.toInt()}');
+        service.showScheduledNotificationWithPayload(
+            id: noti1.hashCode.toInt(),
+            title: 'title',
+            body: 'body',
+            hour: hour1,
+            mins: min1,
+            payload: 'payload',
+            toSet: noti);
+        hour1 += hour;
+        min1 += min;
         if (reminder.length * 250 >= intake) break;
       }
     } else {
       snackbar(
-          "You have enough reminders set, or delete some reminders to dynamically set new ones",
+          "You have enough reminders set. Delete some reminders to dynamically set new ones",
           context);
+    }
+  }
+
+  void listenToNotification() =>
+      service.onNotificationClick.stream.listen(onNoticationListener);
+
+  void onNoticationListener(String? payload) {
+    if (payload != null && payload.isNotEmpty) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: ((context) => Homepage(
+                gender: genderrrr,
+                enAdd: true,
+              )),
+        ),
+      );
     }
   }
 }

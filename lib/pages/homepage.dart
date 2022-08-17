@@ -1,76 +1,42 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:water_reminder/pages/services/local_notification_service.dart';
 
 import 'package:water_reminder/pages/settings.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'home.dart';
-import 'notification/local_notification_service.dart';
 
 class Homepage extends StatefulWidget {
-  const Homepage(
-      {Key? key,
-      required this.bedtime,
-      required this.waketime,
-      required this.gender})
+  Homepage(
+      {Key? key, this.bedtime, this.waketime, required this.gender, this.enAdd})
       : super(key: key);
   final DateTime? bedtime;
   final DateTime? waketime;
   final String gender;
+  bool? enAdd;
 
   @override
   State<Homepage> createState() => _HomepageState();
 }
 
 class _HomepageState extends State<Homepage> {
-  late var wakeTime2 = widget.waketime;
-  late var bedTime2 = widget.bedtime;
-  late var gender1 = widget.gender;
   final editingController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-
-    LocalNotificationService.initialize(context);
-
-    FirebaseMessaging.instance.getInitialMessage().then((message) {
-      if (message != null) {
-        final routeFromMessage = message.data["route"];
-
-        Navigator.of(context).pushNamed(routeFromMessage);
-      }
-    });
-
-    FirebaseMessaging.onMessage.listen((message) {
-      if (message.notification != null) {
-        log('${message.notification!.body}');
-        log('${message.notification!.title}');
-      }
-
-      LocalNotificationService.display(message);
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      final routeFromMessage = message.data["route"];
-      log('Notification received');
-      Navigator.of(context).pushNamed(routeFromMessage);
-    });
-  }
 
   int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
     List<Widget> widgetOptions = <Widget>[
-      const Home(
+      Home(
         title: 'title',
+        enAdd: widget.enAdd,
       ),
       SettingsPage(
           title: 'title',
-          waketime: wakeTime2,
-          bedtime: bedTime2,
-          gender: gender1),
+          waketime: widget.waketime,
+          bedtime: widget.bedtime,
+          gender: widget.gender),
     ];
     void _onItemTapped(int index) {
       setState(() {

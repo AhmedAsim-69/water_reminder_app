@@ -385,7 +385,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           flagBedTime = false;
                         }
                         if (flagWakeTime) {
-                          docUser.update({'bedTime': wakeTime1});
+                          docUser.update({'wakeTime': wakeTime1});
                           flagWakeTime = false;
                         }
                         docUser.update({
