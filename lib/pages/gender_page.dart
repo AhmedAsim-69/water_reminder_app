@@ -80,36 +80,15 @@ class _GenderPageState extends State<GenderPage> {
                       minimumSize: const Size(325, 45),
                     ),
                     onPressed: () {
-                      switch (character) {
-                        case SingingCharacter.male:
-                          {
-                            createUser(weight: widget.weight, gender: 'Male');
-                            Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(
-                                    builder: (context) => SleepCyclePage(
-                                          title: 'title',
-                                          weight: widget.weight,
-                                          gender: 'Male',
-                                        )),
-                                (Route<dynamic> route) => false);
-                            return;
-                          }
-                        case SingingCharacter.female:
-                          {
-                            createUser(weight: widget.weight, gender: 'Female');
-                            Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(
-                                    builder: (context) => SleepCyclePage(
-                                          title: 'title',
-                                          weight: weight,
-                                          gender: 'Female',
-                                        )),
-                                (Route<dynamic> route) => false);
-                            return;
-                          }
-                        default:
-                          break;
-                      }
+                      createUser(weight: widget.weight, gender: '$character');
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (context) => SleepCyclePage(
+                                    title: 'title',
+                                    weight: widget.weight,
+                                    gender: '$character',
+                                  )),
+                          (Route<dynamic> route) => false);
                     },
                     child: const Text(
                       "CONTINUE",

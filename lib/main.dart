@@ -5,9 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:water_reminder/pages/home.dart';
 
 import 'package:water_reminder/pages/splashscreen.dart';
 
+import 'pages/services/local_notification_service.dart';
+
+LocalNotificationService services = LocalNotificationService();
 Future<void> backgroundHandler(RemoteMessage message) async {
   log(message.data.toString());
   log(message.notification!.title.toString());
@@ -15,6 +19,8 @@ Future<void> backgroundHandler(RemoteMessage message) async {
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  service.intialize();
+  services.intialize();
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
 

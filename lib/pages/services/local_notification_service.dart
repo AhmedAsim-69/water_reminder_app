@@ -6,14 +6,13 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 
 class LocalNotificationService {
-  LocalNotificationService();
-
   final _localNotificationService = FlutterLocalNotificationsPlugin();
 
   final BehaviorSubject<String?> onNotificationClick = BehaviorSubject();
 
   Future<void> intialize() async {
     tz.initializeTimeZones();
+    log('intializeddddddddddddddddddddddd');
     const AndroidInitializationSettings androidInitializationSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
@@ -104,6 +103,7 @@ class LocalNotificationService {
       required DateTime toSet,
       required int hour,
       required int mins}) async {
+    tz.initializeTimeZones();
     log('Pushed Noti with Schedule');
     final details = await _notificationDetails();
     if (tz.TZDateTime.from(
@@ -124,11 +124,10 @@ class LocalNotificationService {
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
       );
-      log('Noti set for ${tz.TZDateTime.from(
+      log('Notification set for ${tz.TZDateTime.from(
         toSet.add(Duration(hours: hour, minutes: mins)),
         tz.local,
-      )}');
-      log('id = $id');
+      )} with id = $id');
     }
   }
 

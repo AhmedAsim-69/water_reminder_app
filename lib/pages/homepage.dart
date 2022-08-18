@@ -1,10 +1,6 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:water_reminder/pages/services/local_notification_service.dart';
 
 import 'package:water_reminder/pages/settings.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'home.dart';
 
@@ -29,7 +25,6 @@ class _HomepageState extends State<Homepage> {
   Widget build(BuildContext context) {
     List<Widget> widgetOptions = <Widget>[
       Home(
-        title: 'title',
         enAdd: widget.enAdd,
       ),
       SettingsPage(

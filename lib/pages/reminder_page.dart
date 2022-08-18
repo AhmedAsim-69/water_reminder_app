@@ -2,9 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
@@ -22,10 +20,9 @@ class ReminderPage extends StatefulWidget {
   State<ReminderPage> createState() => _ReminderPageState();
 }
 
-int reminderID = 0;
-
 class _ReminderPageState extends State<ReminderPage> {
   final format = DateFormat("hh:mm a");
+  HomeState callMethod = HomeState();
   TimeOfDay setTime = TimeOfDay.now();
   Timestamp timeStamp1 = Timestamp.now();
   Timestamp timeStamp2 = Timestamp.now();
@@ -55,16 +52,11 @@ class _ReminderPageState extends State<ReminderPage> {
   void initState() {
     reminder = [];
     switchValue = [];
-    service.intialize;
+    service.intialize();
+    listenToNotification();
     getdata();
     getData(intake, null, bedTime, timeStamp1, timeStamp2, wakeTime, callback);
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    timer?.cancel();
-    super.dispose();
   }
 
   @override
@@ -95,93 +87,89 @@ class _ReminderPageState extends State<ReminderPage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: ListView.separated(
-                      physics: const NeverScrollableScrollPhysics(),
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      itemCount: reminder.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          tileColor: Colors.white,
-                          title: Text(
-                            reminder[index].format(context),
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textScaleFactor: 1.3,
-                          ),
-                          subtitle: const Text('Everyday'),
-                          trailing: SizedBox(
-                            width: 110,
-                            child: Row(
-                              children: [
-                                SizedBox(
-                                  height: 50.0,
-                                  width: 50,
-                                  child: FittedBox(
-                                    fit: BoxFit.contain,
-                                    child: CupertinoSwitch(
-                                      activeColor: const Color.fromARGB(
-                                          255, 79, 168, 197),
-                                      value: switchValue[index],
-                                      onChanged: (value) {
-                                        setState(() {
-                                          switchValue[index] = value;
-                                          DateTime noti = DateTime(
-                                              now.year,
-                                              now.month,
-                                              now.day,
-                                              reminder[index].hour,
-                                              reminder[index].minute);
-                                          log('noti is = $noti');
-                                          if (value == false) {
-                                            log('notification removed for ${noti.hashCode.toInt()}');
-                                            flutterLocalNotificationsPlugin
-                                                .cancel(noti.hashCode.toInt());
-                                          }
-                                          if (value == true) {
-                                            service
-                                                .showScheduledNotificationWithPayload(
-                                                    id: noti.hashCode.toInt(),
-                                                    title: 'title',
-                                                    body: 'body',
-                                                    hour: 0,
-                                                    mins: 0,
-                                                    payload: 'payload',
-                                                    toSet: noti);
-                                          }
-                                        });
-                                        FirebaseFirestore.instance
-                                            .collection('Default-User-Water')
-                                            .doc('bool')
-                                            .set({"switchValue": switchValue});
-                                      },
-                                    ),
-                                  ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    bottom: 80, left: 10, right: 10, top: 20),
+                child: ListView.separated(
+                  physics: const NeverScrollableScrollPhysics(),
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  itemCount: reminder.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      tileColor: Colors.white,
+                      title: Text(
+                        reminder[index].format(context),
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textScaleFactor: 1.3,
+                      ),
+                      subtitle: const Text('Everyday'),
+                      trailing: SizedBox(
+                        width: 110,
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              height: 50.0,
+                              width: 50,
+                              child: FittedBox(
+                                fit: BoxFit.contain,
+                                child: CupertinoSwitch(
+                                  activeColor:
+                                      const Color.fromARGB(255, 79, 168, 197),
+                                  value: switchValue[index],
+                                  onChanged: (value) {
+                                    setState(() {
+                                      switchValue[index] = value;
+                                      DateTime noti = DateTime(
+                                          now.year,
+                                          now.month,
+                                          now.day,
+                                          reminder[index].hour,
+                                          reminder[index].minute);
+                                      if (value == false) {
+                                        flutterLocalNotificationsPlugin
+                                            .cancel(index);
+                                        log('notification removed for id = ${noti.hashCode}');
+                                      }
+                                      if (value == true) {
+                                        service.showScheduledNotificationWithPayload(
+                                            id: noti.hashCode,
+                                            title: 'Water Intake Time',
+                                            body:
+                                                'It is time for you to drink 250ml water.',
+                                            hour: 0,
+                                            mins: 0,
+                                            payload: 'payload',
+                                            toSet: noti);
+                                      }
+                                    });
+                                    FirebaseFirestore.instance
+                                        .collection('Default-User-Water')
+                                        .doc('bool')
+                                        .set({"switchValue": switchValue});
+                                  },
                                 ),
-                                IconButton(
-                                    onPressed: () {
-                                      _deleteTime(index);
-                                      setState(() {});
-                                    },
-                                    icon: const Icon(Icons.close)),
-                              ],
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                      separatorBuilder: (context, index) {
-                        return const Divider();
-                      },
-                    ),
-                  ),
-                ],
+                            IconButton(
+                                onPressed: () {
+                                  _deleteTime(index);
+                                  setState(() {});
+                                },
+                                icon: const Icon(Icons.close)),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                  separatorBuilder: (context, index) {
+                    return const Divider();
+                  },
+                ),
               ),
             ],
           ),
@@ -252,7 +240,7 @@ class _ReminderPageState extends State<ReminderPage> {
         FirebaseFirestore.instance
             .collection('Default-User-Water')
             .doc('reminders')
-            .set({"${DateTime(now.year, now.month, now.day)}": tempReminder});
+            .set({"reminders ${DateTime.now().day}": tempReminder});
 
         FirebaseFirestore.instance
             .collection('Default-User-Water')
@@ -263,9 +251,9 @@ class _ReminderPageState extends State<ReminderPage> {
         DateTime noti =
             DateTime(now.year, now.month, now.day, picked.hour, picked.minute);
         service.showScheduledNotificationWithPayload(
-            id: noti.hashCode.toInt(),
-            title: 'title',
-            body: 'body',
+            id: noti.hashCode,
+            title: 'Water Intake Time',
+            body: 'It is time for you to drink 250ml water.',
             hour: 0,
             mins: 0,
             payload: 'payload',
@@ -277,8 +265,8 @@ class _ReminderPageState extends State<ReminderPage> {
   Future<void> _deleteTime(int index) async {
     DateTime noti = DateTime(now.year, now.month, now.day, reminder[index].hour,
         reminder[index].minute);
-    log('Deleted id = ${noti.hashCode.toInt()}');
-    flutterLocalNotificationsPlugin.cancel(noti.hashCode.toInt());
+    flutterLocalNotificationsPlugin.cancel(noti.hashCode);
+    log('notification cancelled for id = ${noti.hashCode}');
     reminder.removeAt(index);
     switchValue.removeAt(index);
     List<String> tempReminder = [];
@@ -289,7 +277,7 @@ class _ReminderPageState extends State<ReminderPage> {
     FirebaseFirestore.instance
         .collection('Default-User-Water')
         .doc('reminders')
-        .set({"${DateTime(now.year, now.month, now.day)}": tempReminder});
+        .set({"reminders ${DateTime.now().day}": tempReminder});
     FirebaseFirestore.instance
         .collection('Default-User-Water')
         .doc('bool')
@@ -303,7 +291,7 @@ class _ReminderPageState extends State<ReminderPage> {
     docUser.doc('reminders').get().then((value) {
       setState(() {
         for (var element
-            in List.from(value["${DateTime(now.year, now.month, now.day)}"])) {
+            in List.from(value['reminders ${DateTime.now().day}'])) {
           TimeOfDay data = TimeOfDay.fromDateTime(format.parse(element));
           reminder.add(data);
         }
@@ -323,8 +311,8 @@ class _ReminderPageState extends State<ReminderPage> {
     int glass = intake ~/ 250 - reminder.length;
     int hour = temp.hour ~/ glass;
     int min = temp.minute ~/ glass;
-    int hour1 = 0;
-    int min1 = 0;
+    int hour1 = hour;
+    int min1 = min;
     if (reminder.length * 250 < intake) {
       for (int x = 0; x <= glass; x++) {
         _selectTime(
@@ -334,12 +322,13 @@ class _ReminderPageState extends State<ReminderPage> {
 
         DateTime noti = DateTime(
             now.year, now.month, now.day, wakeTime.hour, wakeTime.minute);
-        DateTime noti1 = noti.add(Duration(hours: hour1 + 5, minutes: min1));
-        log('id stored = ${noti1.hashCode.toInt()}');
+        DateTime noti1 = DateTime(now.year, now.month, now.day,
+            noti.hour + hour1, noti.minute + min1);
+
         service.showScheduledNotificationWithPayload(
-            id: noti1.hashCode.toInt(),
-            title: 'title',
-            body: 'body',
+            id: noti1.hashCode,
+            title: 'Water Intake Time',
+            body: 'It is time for you to drink 250ml water.',
             hour: hour1,
             mins: min1,
             payload: 'payload',
@@ -350,7 +339,7 @@ class _ReminderPageState extends State<ReminderPage> {
       }
     } else {
       snackbar(
-          "You have enough reminders set. Delete some reminders to dynamically set new ones",
+          "You have enough reminders set, or delete some reminders to dynamically set new ones",
           context);
     }
   }
@@ -369,6 +358,8 @@ class _ReminderPageState extends State<ReminderPage> {
               )),
         ),
       );
+      callMethod.selectTime(context);
+      setState(() {});
     }
   }
 }

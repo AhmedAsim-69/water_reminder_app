@@ -1,25 +1,21 @@
+import 'package:flutter/material.dart';
+
 import 'dart:async';
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 
-import 'package:flutter/material.dart';
-import 'package:water_reminder/pages/homepage.dart';
-import 'package:water_reminder/pages/reminder_page.dart';
 import 'package:water_reminder/pages/services/local_notification_service.dart';
-import 'package:water_reminder/pages/splashscreen.dart';
 
 class Home extends StatefulWidget {
-  Home({Key? key, required this.title, this.enAdd}) : super(key: key);
+  Home({Key? key, this.enAdd}) : super(key: key);
 
-  final String title;
   bool? enAdd;
 
   @override
-  State<Home> createState() => _HomeState();
+  State<Home> createState() => HomeState();
 }
 
 List<TimeOfDay> times = [];
@@ -30,7 +26,7 @@ Timer? timer;
 String genderrrr = '';
 final LocalNotificationService service = LocalNotificationService();
 
-class _HomeState extends State<Home> {
+class HomeState extends State<Home> {
   final format = DateFormat("hh:mm a");
   TimeOfDay setTime = TimeOfDay.now();
   int intake = 1;
@@ -240,7 +236,8 @@ class _HomeState extends State<Home> {
                                 (times.length * 250 >= intake)
                                     ? snackbar("You have achieved today's goal",
                                         context)
-                                    : _selectTime(context);
+                                    : selectTime(context);
+                                setState(() {});
                               },
                               icon: const Icon(
                                 Icons.add_sharp,
@@ -339,31 +336,38 @@ class _HomeState extends State<Home> {
     );
   }
 
-  _addItemToList(TimeOfDay setTime) {
+  addItemToList(TimeOfDay setTime) {
     List<TimeOfDay> tempList = times;
     tempList.add(setTime);
-    setState(() {
-      times = tempList;
-    });
+    times = tempList;
   }
 
-  Future<void> _selectTime(BuildContext context, [int? index]) async {
-    final TimeOfDay picked = TimeOfDay.now();
+  Future<void> selectTime(BuildContext context, [int? index]) async {
+    TimeOfDay? picked = TimeOfDay.now();
+    if (index != null) {
+      picked = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+        builder: (context, child) {
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+            child: child!,
+          );
+        },
+      );
+    }
 
-    setState(() {
-      setTime = picked;
-      (index == null) ? _addItemToList(setTime) : times[index] = setTime;
-
-      List<String> tempTimes = [];
-
-      for (var item in times) {
-        tempTimes.add(item.format(context));
-      }
-      FirebaseFirestore.instance
-          .collection('Default-User-Water')
-          .doc('user1')
-          .set({"user1": tempTimes});
-    });
+    setTime = picked!;
+    (index == null) ? addItemToList(setTime) : times[index] = setTime;
+    List<String> tempTimes = [];
+    for (var item in times) {
+      tempTimes.add(item.format(context));
+    }
+    FirebaseFirestore.instance
+        .collection('Default-User-Water')
+        .doc('user1')
+        .set({"user1": tempTimes});
+    setState(() {});
   }
 
   Future<void> _deleteTime(int index) async {
@@ -382,7 +386,8 @@ class _HomeState extends State<Home> {
   void handleClick(String value, int index) {
     switch (value) {
       case 'Edit':
-        _selectTime(context, index);
+        selectTime(context, index);
+        setState(() {});
         break;
 
       case 'Delete':
