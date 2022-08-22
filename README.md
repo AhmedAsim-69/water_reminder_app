@@ -2,11 +2,13 @@
 
 Flutter application to keep track of your daily water intake and remind about it.
 
-### Flow Diagram ###
+
+## User Flow Diagram and Description
 ![drawwwwww drawio (5)](https://user-images.githubusercontent.com/108008682/185394211-1426fdd6-76af-4172-847c-48fb88c1e17e.png)
 
 
-#### Water Reminder App ####
+## Use Cases and Description
+
 #### - Single-User Application ####
 This is a single-user application, meaning it is defined for only personal use.
 #### - On-Boarding personal information input ####
