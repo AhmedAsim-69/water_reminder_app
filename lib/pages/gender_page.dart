@@ -81,14 +81,20 @@ class _GenderPageState extends State<GenderPage> {
                     ),
                     onPressed: () {
                       createUser(weight: widget.weight, gender: '$character');
-                      Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(
-                              builder: (context) => SleepCyclePage(
-                                    title: 'title',
-                                    weight: widget.weight,
-                                    gender: '$character',
-                                  )),
-                          (Route<dynamic> route) => false);
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => SleepCyclePage(
+                                title: 'title',
+                                weight: widget.weight,
+                                gender: '$character',
+                              )));
+                      // Navigator.of(context).pushAndRemoveUntil(
+                      //     MaterialPageRoute(
+                      //         builder: (context) => SleepCyclePage(
+                      //               title: 'title',
+                      //               weight: widget.weight,
+                      //               gender: '$character',
+                      //             )),
+                      // (Route<dynamic> route) => false);
                     },
                     child: const Text(
                       "CONTINUE",

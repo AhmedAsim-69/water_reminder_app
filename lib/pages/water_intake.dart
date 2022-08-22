@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:water_reminder/pages/homepage.dart';
+import 'package:water_reminder/pages/reminder_page.dart';
 import 'package:water_reminder/pages/weight_page.dart';
 
 class WaterIntakePage extends StatefulWidget {
@@ -27,10 +28,15 @@ class _WaterIntakePageState extends State<WaterIntakePage> {
   late var waterIntake = waterCal.round().toInt();
 
   late var weightctrl = TextEditingController(text: waterIntake.toString());
+  ReminderPageState generate = ReminderPageState();
 
   final _formKey = GlobalKey<FormState>();
   late var wakeTime1 = widget.wakeTime;
   late var bedTime1 = widget.bedTime;
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -121,6 +127,13 @@ class _WaterIntakePageState extends State<WaterIntakePage> {
                                     gender: widget.gender),
                               ),
                               (Route<dynamic> route) => false);
+                          generate.dynamicGeneration(
+                              context,
+                              TimeOfDay.fromDateTime(bedTime1!),
+                              TimeOfDay.fromDateTime(wakeTime1!),
+                              0,
+                              waterIntake,
+                              wakeTime1!);
                         }
                       },
                       child: const Text(

@@ -112,13 +112,18 @@ class _WeightPageState extends State<WeightPage> {
                             weight = int.parse(weightctrl.text);
                             createUser(weight: weight);
                           });
-                          Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                  builder: (context) => GenderPage(
-                                        title: 'title',
-                                        weight: weight,
-                                      )),
-                              (Route<dynamic> route) => false);
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => GenderPage(
+                                    title: 'title',
+                                    weight: weight,
+                                  )));
+                          // Navigator.of(context).pushAndRemoveUntil(
+                          //     MaterialPageRoute(
+                          //         builder: (context) => GenderPage(
+                          //               title: 'title',
+                          //               weight: weight,
+                          //             )),
+                          //     (Route<dynamic> route) => false);
                         }
                       },
                       child: const Text(

@@ -12,50 +12,29 @@ import 'package:water_reminder/pages/services/local_notification_service.dart';
 import 'package:water_reminder/pages/splashscreen.dart';
 
 class ReminderPage extends StatefulWidget {
-  const ReminderPage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
+  const ReminderPage({
+    Key? key,
+  }) : super(key: key);
 
   @override
-  State<ReminderPage> createState() => _ReminderPageState();
+  State<ReminderPage> createState() => ReminderPageState();
 }
 
-class _ReminderPageState extends State<ReminderPage> {
+class ReminderPageState extends State<ReminderPage> {
   final format = DateFormat("hh:mm a");
   HomeState callMethod = HomeState();
   TimeOfDay setTime = TimeOfDay.now();
-  Timestamp timeStamp1 = Timestamp.now();
-  Timestamp timeStamp2 = Timestamp.now();
-  DateTime wakeTime = DateTime.now();
-  DateTime bedTime = DateTime.now();
-  TimeOfDay wakeTime1 = TimeOfDay.now();
-  TimeOfDay bedTime1 = TimeOfDay.now();
-  TimeOfDay temp = TimeOfDay.now();
   DateTime now = DateTime.now();
-
   final LocalNotificationService service = LocalNotificationService();
-
-  callback(varIntake, varBedTime, varWakeTime) {
-    setState(() {
-      intake = varIntake;
-      bedTime = varBedTime;
-      wakeTime = varWakeTime;
-      bedTime1 = TimeOfDay.fromDateTime(bedTime);
-      wakeTime1 = TimeOfDay.fromDateTime(wakeTime);
-      temp = TimeOfDay(
-          hour: (wakeTime1.hour - bedTime1.hour - 24).abs(),
-          minute: (wakeTime1.minute - bedTime1.minute - 60).abs());
-    });
-  }
 
   @override
   void initState() {
     reminder = [];
     switchValue = [];
+    getdata();
     service.intialize();
     listenToNotification();
-    getdata();
-    getData(intake, null, bedTime, timeStamp1, timeStamp2, wakeTime, callback);
+
     super.initState();
   }
 
@@ -175,29 +154,14 @@ class _ReminderPageState extends State<ReminderPage> {
           ),
         ),
       ),
-      floatingActionButton: Container(
-        alignment: Alignment.bottomCenter,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            FloatingActionButton(
-              heroTag: 'Add',
-              backgroundColor: const Color.fromARGB(255, 79, 168, 197),
-              onPressed: () {
-                _selectTime(context);
-              },
-              child: const Icon(Icons.add),
-            ),
-            FloatingActionButton(
-              heroTag: 'Schedule',
-              backgroundColor: const Color.fromARGB(255, 79, 168, 197),
-              onPressed: () {
-                dynamicGeneration();
-              },
-              child: const Icon(Icons.schedule),
-            ),
-          ],
-        ),
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'Add',
+        backgroundColor: const Color.fromARGB(255, 79, 168, 197),
+        onPressed: () {
+          _selectTime(context);
+          setState(() {});
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -205,9 +169,7 @@ class _ReminderPageState extends State<ReminderPage> {
   _addItemToList(TimeOfDay setTime) {
     List<TimeOfDay> tempList = reminder;
     tempList.add(setTime);
-    setState(() {
-      reminder = tempList;
-    });
+    reminder = tempList;
   }
 
   Future<void> _selectTime(BuildContext context, [TimeOfDay? time]) async {
@@ -226,27 +188,25 @@ class _ReminderPageState extends State<ReminderPage> {
         : time;
 
     if (picked != null && picked != setTime) {
-      setState(() {
-        setTime = picked;
-        _addItemToList(setTime);
+      setTime = picked;
+      _addItemToList(setTime);
 
-        switchValue.add(true);
-        List<String> tempReminder = [];
+      switchValue.add(true);
+      List<String> tempReminder = [];
 
-        for (var item in reminder) {
-          tempReminder.add(item.format(context));
-        }
+      for (var item in reminder) {
+        tempReminder.add(item.format(context));
+      }
 
-        FirebaseFirestore.instance
-            .collection('Default-User-Water')
-            .doc('reminders')
-            .set({"reminders ${DateTime.now().day}": tempReminder});
+      FirebaseFirestore.instance
+          .collection('Default-User-Water')
+          .doc('reminders')
+          .set({"reminders ${DateTime.now().day}": tempReminder});
 
-        FirebaseFirestore.instance
-            .collection('Default-User-Water')
-            .doc('bool')
-            .set({"switchValue": switchValue});
-      });
+      FirebaseFirestore.instance
+          .collection('Default-User-Water')
+          .doc('bool')
+          .set({"switchValue": switchValue});
       if (time == null) {
         DateTime noti =
             DateTime(now.year, now.month, now.day, picked.hour, picked.minute);
@@ -307,40 +267,49 @@ class _ReminderPageState extends State<ReminderPage> {
     });
   }
 
-  dynamicGeneration() {
-    int glass = intake ~/ 250 - reminder.length;
+  dynamicGeneration(BuildContext context, TimeOfDay bedTimeee,
+      TimeOfDay wakeTimeee, int rem, int intake, DateTime wakeTime1) {
+    TimeOfDay temp = (bedTimeee.hour < 12)
+        ? TimeOfDay(
+            hour: (23 - wakeTimeee.hour - bedTimeee.hour).abs(),
+            minute: (wakeTimeee.minute - bedTimeee.minute - 60).abs())
+        : TimeOfDay(
+            hour: (wakeTimeee.hour - bedTimeee.hour).abs(),
+            minute: (wakeTimeee.minute - bedTimeee.minute - 60).abs());
+    double glass = intake / 250;
     int hour = temp.hour ~/ glass;
-    int min = temp.minute ~/ glass;
+    double addMin = temp.hour / glass;
+
+    int min = (temp.minute ~/ glass + ((addMin % 1) * 60)).ceil();
     int hour1 = hour;
     int min1 = min;
-    if (reminder.length * 250 < intake) {
-      for (int x = 0; x <= glass; x++) {
-        _selectTime(
-            context,
-            TimeOfDay.fromDateTime(
-                wakeTime.add(Duration(hours: hour1, minutes: min1))));
+    if (bedTimeee.hour >= 12) {
+      min = temp.minute ~/ glass;
+      if (reminder.length * 250 < intake) {
+        for (int x = 0; x <= glass; x++) {
+          _selectTime(
+              context,
+              TimeOfDay.fromDateTime(
+                  wakeTime1.add(Duration(hours: hour1, minutes: min1))));
 
-        DateTime noti = DateTime(
-            now.year, now.month, now.day, wakeTime.hour, wakeTime.minute);
-        DateTime noti1 = DateTime(now.year, now.month, now.day,
-            noti.hour + hour1, noti.minute + min1);
+          DateTime noti = DateTime(
+              now.year, now.month, now.day, wakeTimeee.hour, wakeTimeee.minute);
+          DateTime noti1 = DateTime(now.year, now.month, now.day,
+              noti.hour + hour1, noti.minute + min1);
 
-        service.showScheduledNotificationWithPayload(
-            id: noti1.hashCode,
-            title: 'Water Intake Time',
-            body: 'It is time for you to drink 250ml water.',
-            hour: hour1,
-            mins: min1,
-            payload: 'payload',
-            toSet: noti);
-        hour1 += hour;
-        min1 += min;
-        if (reminder.length * 250 >= intake) break;
+          service.showScheduledNotificationWithPayload(
+              id: noti1.hashCode,
+              title: 'Water Intake Time',
+              body: 'It is time for you to drink 250ml water.',
+              hour: hour1,
+              mins: min1,
+              payload: 'payload',
+              toSet: noti);
+          hour1 += hour;
+          min1 += min;
+          if (reminder.length * 250 >= intake) break;
+        }
       }
-    } else {
-      snackbar(
-          "You have enough reminders set, or delete some reminders to dynamically set new ones",
-          context);
     }
   }
 

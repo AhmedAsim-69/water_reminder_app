@@ -12,7 +12,6 @@ class LocalNotificationService {
 
   Future<void> intialize() async {
     tz.initializeTimeZones();
-    log('intializeddddddddddddddddddddddd');
     const AndroidInitializationSettings androidInitializationSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
@@ -57,7 +56,6 @@ class LocalNotificationService {
     required String title,
     required String body,
   }) async {
-    log('Pushed Noti Instantly');
     final details = await _notificationDetails();
     await _localNotificationService.show(id, title, body, details);
   }
@@ -67,7 +65,6 @@ class LocalNotificationService {
       required String title,
       required String body,
       required int seconds}) async {
-    log('Pushed Noti with Schedule');
     final details = await _notificationDetails();
     await _localNotificationService.zonedSchedule(
       id,
@@ -89,7 +86,6 @@ class LocalNotificationService {
       required String title,
       required String body,
       required String payload}) async {
-    log('Pushed Noti with Payload');
     final details = await _notificationDetails();
     await _localNotificationService.show(id, title, body, details,
         payload: payload);
@@ -104,7 +100,6 @@ class LocalNotificationService {
       required int hour,
       required int mins}) async {
     tz.initializeTimeZones();
-    log('Pushed Noti with Schedule');
     final details = await _notificationDetails();
     if (tz.TZDateTime.from(
       toSet.add(Duration(hours: hour, minutes: mins)),

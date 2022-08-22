@@ -344,9 +344,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => const ReminderPage(
-                                      title: 'title',
-                                    )));
+                                builder: (context) => const ReminderPage()));
                           },
                           child: const Text(
                             'Reminder Schedule',

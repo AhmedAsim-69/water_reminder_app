@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:water_reminder/pages/reminder_page.dart';
 
 import 'package:water_reminder/pages/water_intake.dart';
 import 'package:water_reminder/pages/weight_page.dart';
@@ -31,6 +32,7 @@ class _SleepCyclePageState extends State<SleepCyclePage> {
   late var gender1 = widget.gender;
   DateTime? tempWakeTime = DateTime(2017, 9, 7, 9, 30);
   DateTime? tempBedTime = DateTime(2017, 9, 7, 22, 30);
+  ReminderPageState generate = ReminderPageState();
 
   DateTime? wakeTime = DateTime(2017, 9, 7, 9, 30);
   DateTime? bedTime = DateTime(2017, 9, 7, 22, 30);
@@ -112,17 +114,29 @@ class _SleepCyclePageState extends State<SleepCyclePage> {
                             gender: widget.gender,
                             bedTime: bedTime,
                             wakeTime: wakeTime);
-                        Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(
-                              builder: (context) => WaterIntakePage(
-                                title: 'title',
-                                weight: weight1,
-                                gender: gender1,
-                                bedTime: bedTime,
-                                wakeTime: wakeTime,
-                              ),
-                            ),
-                            (Route<dynamic> route) => false);
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => WaterIntakePage(
+                                  title: 'title',
+                                  weight: weight1,
+                                  gender: gender1,
+                                  bedTime: bedTime,
+                                  wakeTime: wakeTime,
+                                )));
+                        // Navigator.of(context).pushAndRemoveUntil(
+                        //     MaterialPageRoute(
+                        //       builder: (context) => WaterIntakePage(
+                        //         title: 'title',
+                        //         weight: weight1,
+                        //         gender: gender1,
+                        //         bedTime: bedTime,
+                        //         wakeTime: wakeTime,
+                        //       ),
+                        //     ),
+                        //     (Route<dynamic> route) => false);
+                        // generate.dynamicGeneration(
+                        //     TimeOfDay.fromDateTime(bedTime!),
+                        //     TimeOfDay.fromDateTime(wakeTime!),
+                        //     0);
                       },
                       child: const Text(
                         "CONTINUE",

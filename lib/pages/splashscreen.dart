@@ -1,8 +1,8 @@
-import 'dart:developer';
+import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
 import 'package:water_reminder/pages/homepage.dart';
 import 'package:water_reminder/pages/weight_page.dart';
 
@@ -122,6 +122,5 @@ int? getData(
       callbackfunction!(intake, bedTime, wakeTime);
     }
   });
-  log('ddsdsddsds');
   return intake;
 }
