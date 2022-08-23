@@ -122,21 +122,6 @@ class _SleepCyclePageState extends State<SleepCyclePage> {
                                   bedTime: bedTime,
                                   wakeTime: wakeTime,
                                 )));
-                        // Navigator.of(context).pushAndRemoveUntil(
-                        //     MaterialPageRoute(
-                        //       builder: (context) => WaterIntakePage(
-                        //         title: 'title',
-                        //         weight: weight1,
-                        //         gender: gender1,
-                        //         bedTime: bedTime,
-                        //         wakeTime: wakeTime,
-                        //       ),
-                        //     ),
-                        //     (Route<dynamic> route) => false);
-                        // generate.dynamicGeneration(
-                        //     TimeOfDay.fromDateTime(bedTime!),
-                        //     TimeOfDay.fromDateTime(wakeTime!),
-                        //     0);
                       },
                       child: const Text(
                         "CONTINUE",

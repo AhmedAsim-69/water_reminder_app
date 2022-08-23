@@ -117,13 +117,6 @@ class _WeightPageState extends State<WeightPage> {
                                     title: 'title',
                                     weight: weight,
                                   )));
-                          // Navigator.of(context).pushAndRemoveUntil(
-                          //     MaterialPageRoute(
-                          //         builder: (context) => GenderPage(
-                          //               title: 'title',
-                          //               weight: weight,
-                          //             )),
-                          //     (Route<dynamic> route) => false);
                         }
                       },
                       child: const Text(

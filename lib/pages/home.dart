@@ -21,6 +21,7 @@ class Home extends StatefulWidget {
 List<TimeOfDay> times = [];
 List<TimeOfDay> reminder = [];
 List<bool> switchValue = [];
+bool isLoading = false;
 int intake = 0;
 Timer? timer;
 String genderrrr = '';
@@ -34,6 +35,7 @@ class HomeState extends State<Home> {
   @override
   void initState() {
     times = [];
+    isLoading = false;
     getdata();
     getintake();
 
@@ -72,6 +74,7 @@ class HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    log('isLoading = $isLoading');
     double val = (times.length) / intake * 250;
     return Scaffold(
       appBar: AppBar(
@@ -86,25 +89,52 @@ class HomeState extends State<Home> {
         centerTitle: true,
       ),
       backgroundColor: const Color.fromARGB(255, 241, 247, 249),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  const Icon(
-                    Icons.water_drop_outlined,
-                    color: Colors.blue,
-                    size: 40.0,
-                  ),
-                  Flexible(
-                    child: Container(
-                      margin: const EdgeInsets.all(10.0),
+      body: !isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        const Icon(
+                          Icons.water_drop_outlined,
+                          color: Colors.blue,
+                          size: 40.0,
+                        ),
+                        Flexible(
+                          child: Container(
+                            margin: const EdgeInsets.all(10.0),
+                            decoration: const BoxDecoration(
+                              color: Color.fromARGB(255, 104, 176, 200),
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(10),
+                                topRight: Radius.circular(10),
+                                bottomLeft: Radius.circular(10),
+                                bottomRight: Radius.circular(10),
+                              ),
+                            ),
+                            child: const Text(
+                              'Do not drink cold water immediately after hot drinks',
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.white,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      alignment: Alignment.center,
+                      margin: const EdgeInsets.all(20),
+                      height: 300,
                       decoration: const BoxDecoration(
-                        color: Color.fromARGB(255, 104, 176, 200),
+                        color: Colors.white,
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(10),
                           topRight: Radius.circular(10),
@@ -112,227 +142,207 @@ class HomeState extends State<Home> {
                           bottomRight: Radius.circular(10),
                         ),
                       ),
-                      child: const Text(
-                        'Do not drink cold water immediately after hot drinks',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Container(
-                alignment: Alignment.center,
-                margin: const EdgeInsets.all(20),
-                height: 300,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
-                    bottomLeft: Radius.circular(10),
-                    bottomRight: Radius.circular(10),
-                  ),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(
-                        top: 30,
-                        bottom: 20,
-                        left: 15,
-                      ),
-                      child: RotatedBox(
-                        quarterTurns: -1,
-                        child: ClipRRect(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(10)),
-                          child: LinearProgressIndicator(
-                            minHeight: 90,
-                            value: val,
-                            valueColor: const AlwaysStoppedAnimation(
-                              Color.fromARGB(255, 104, 176, 200),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(
+                              top: 30,
+                              bottom: 20,
+                              left: 15,
                             ),
-                            backgroundColor:
-                                const Color.fromARGB(255, 241, 247, 249),
+                            child: RotatedBox(
+                              quarterTurns: -1,
+                              child: ClipRRect(
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(10)),
+                                child: LinearProgressIndicator(
+                                  minHeight: 90,
+                                  value: val,
+                                  valueColor: const AlwaysStoppedAnimation(
+                                    Color.fromARGB(255, 104, 176, 200),
+                                  ),
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 241, 247, 249),
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          bottom: 20,
-                          left: 20,
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            RichText(
-                              text: TextSpan(
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                bottom: 20,
+                                left: 20,
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  TextSpan(
-                                    text: '${(times.length) * 250}',
-                                    style: const TextStyle(
-                                      color: Color.fromARGB(255, 104, 176, 200),
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.bold,
+                                  RichText(
+                                    text: TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text: '${(times.length) * 250}',
+                                          style: const TextStyle(
+                                            color: Color.fromARGB(
+                                                255, 104, 176, 200),
+                                            fontSize: 30,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: "/ $intake",
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black,
+                                              fontSize: 30),
+                                        ),
+                                        WidgetSpan(
+                                          child: Transform.translate(
+                                            offset: const Offset(0.0, 4.0),
+                                            child: const Text(
+                                              'ml',
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  TextSpan(
-                                    text: "/ $intake",
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                        fontSize: 30),
-                                  ),
-                                  WidgetSpan(
-                                    child: Transform.translate(
-                                      offset: const Offset(0.0, 4.0),
-                                      child: const Text(
-                                        'ml',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 10,
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            "Your have completed ${(times.length * 250 / intake * 100).round()}% of your Daily Target",
+                                            style:
+                                                const TextStyle(fontSize: 16),
+                                          ),
                                         ),
+                                      ],
+                                    ),
+                                  ),
+                                  TextButton.icon(
+                                    style: ElevatedButton.styleFrom(
+                                      primary: const Color.fromARGB(
+                                          255, 79, 168, 197),
+                                      elevation: 3,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                      minimumSize: const Size(325, 45),
+                                    ),
+                                    onPressed: () {
+                                      (times.length * 250 >= intake)
+                                          ? snackbar(
+                                              "You have achieved today's goal",
+                                              context)
+                                          : selectTime(context);
+                                      setState(() {});
+                                    },
+                                    icon: const Icon(
+                                      Icons.add_sharp,
+                                      color: Colors.white,
+                                    ),
+                                    label: const Text(
+                                      'Add 250ml',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20,
                                       ),
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 10,
-                              ),
-                              alignment: Alignment.center,
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      "Your have completed ${(times.length * 250 / intake * 100).round()}% of your Daily Target",
-                                      style: const TextStyle(fontSize: 16),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            TextButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                primary:
-                                    const Color.fromARGB(255, 79, 168, 197),
-                                elevation: 3,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)),
-                                minimumSize: const Size(325, 45),
-                              ),
-                              onPressed: () {
-                                (times.length * 250 >= intake)
-                                    ? snackbar("You have achieved today's goal",
-                                        context)
-                                    : selectTime(context);
-                                setState(() {});
-                              },
-                              icon: const Icon(
-                                Icons.add_sharp,
-                                color: Colors.white,
-                              ),
-                              label: const Text(
-                                'Add 250ml',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                          )
+                        ],
                       ),
-                    )
+                    ),
+                    Column(
+                      children: [
+                        Container(
+                          alignment: Alignment.topLeft,
+                          margin: const EdgeInsets.symmetric(horizontal: 10),
+                          color: Colors.white,
+                          child: const Text(
+                            "Today's Records",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                          child: ListView.separated(
+                            physics: const NeverScrollableScrollPhysics(),
+                            scrollDirection: Axis.vertical,
+                            shrinkWrap: true,
+                            itemCount: times.length,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                tileColor: Colors.white,
+                                leading: const Icon(
+                                  Icons.water_drop,
+                                  color: Colors.blueAccent,
+                                ),
+                                title: const Text(
+                                  '250ml',
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 16),
+                                ),
+                                trailing: SizedBox(
+                                  width: 110,
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        times[index].format(context),
+                                        style: const TextStyle(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                      PopupMenuButton<String>(
+                                        color: const Color.fromARGB(
+                                            255, 241, 247, 249),
+                                        onSelected: (choice) {
+                                          handleClick(choice, index);
+                                        },
+                                        itemBuilder: (BuildContext context) {
+                                          return {'Edit', 'Delete'}
+                                              .map((String choice) {
+                                            return PopupMenuItem<String>(
+                                              value: choice,
+                                              child: Text(choice),
+                                            );
+                                          }).toList();
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                            separatorBuilder: (context, index) {
+                              return const Divider();
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
-              Column(
-                children: [
-                  Container(
-                    alignment: Alignment.topLeft,
-                    margin: const EdgeInsets.symmetric(horizontal: 10),
-                    color: Colors.white,
-                    child: const Text(
-                      "Today's Records",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: ListView.separated(
-                      physics: const NeverScrollableScrollPhysics(),
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      itemCount: times.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          tileColor: Colors.white,
-                          leading: const Icon(
-                            Icons.water_drop,
-                            color: Colors.blueAccent,
-                          ),
-                          title: const Text(
-                            '250ml',
-                            style: TextStyle(color: Colors.black, fontSize: 16),
-                          ),
-                          trailing: SizedBox(
-                            width: 110,
-                            child: Row(
-                              children: [
-                                Text(
-                                  times[index].format(context),
-                                  style: const TextStyle(
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                                PopupMenuButton<String>(
-                                  color:
-                                      const Color.fromARGB(255, 241, 247, 249),
-                                  onSelected: (choice) {
-                                    handleClick(choice, index);
-                                  },
-                                  itemBuilder: (BuildContext context) {
-                                    return {'Edit', 'Delete'}
-                                        .map((String choice) {
-                                      return PopupMenuItem<String>(
-                                        value: choice,
-                                        child: Text(choice),
-                                      );
-                                    }).toList();
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                      separatorBuilder: (context, index) {
-                        return const Divider();
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 
@@ -443,6 +453,7 @@ class HomeState extends State<Home> {
           TimeOfDay data = TimeOfDay.fromDateTime(format.parse(element));
           times.add(data);
         }
+        isLoading = true;
       });
     });
   }

@@ -22,15 +22,15 @@ class ReminderPage extends StatefulWidget {
 
 class ReminderPageState extends State<ReminderPage> {
   final format = DateFormat("hh:mm a");
-  HomeState callMethod = HomeState();
   TimeOfDay setTime = TimeOfDay.now();
   DateTime now = DateTime.now();
   final LocalNotificationService service = LocalNotificationService();
-
+  bool isLoadingDone = false;
   @override
   void initState() {
     reminder = [];
     switchValue = [];
+    isLoadingDone = false;
     getdata();
     service.intialize();
     listenToNotification();
@@ -62,98 +62,143 @@ class ReminderPageState extends State<ReminderPage> {
         ),
       ),
       backgroundColor: const Color.fromARGB(255, 241, 247, 249),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(
-                    bottom: 80, left: 10, right: 10, top: 20),
-                child: ListView.separated(
-                  physics: const NeverScrollableScrollPhysics(),
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  itemCount: reminder.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      tileColor: Colors.white,
-                      title: Text(
-                        reminder[index].format(context),
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textScaleFactor: 1.3,
-                      ),
-                      subtitle: const Text('Everyday'),
-                      trailing: SizedBox(
-                        width: 110,
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              height: 50.0,
-                              width: 50,
-                              child: FittedBox(
-                                fit: BoxFit.contain,
-                                child: CupertinoSwitch(
-                                  activeColor:
-                                      const Color.fromARGB(255, 79, 168, 197),
-                                  value: switchValue[index],
-                                  onChanged: (value) {
-                                    setState(() {
-                                      switchValue[index] = value;
-                                      DateTime noti = DateTime(
-                                          now.year,
-                                          now.month,
-                                          now.day,
-                                          reminder[index].hour,
-                                          reminder[index].minute);
-                                      if (value == false) {
-                                        flutterLocalNotificationsPlugin
-                                            .cancel(index);
-                                        log('notification removed for id = ${noti.hashCode}');
-                                      }
-                                      if (value == true) {
-                                        service.showScheduledNotificationWithPayload(
-                                            id: noti.hashCode,
-                                            title: 'Water Intake Time',
-                                            body:
-                                                'It is time for you to drink 250ml water.',
-                                            hour: 0,
-                                            mins: 0,
-                                            payload: 'payload',
-                                            toSet: noti);
-                                      }
-                                    });
-                                    FirebaseFirestore.instance
-                                        .collection('Default-User-Water')
-                                        .doc('bool')
-                                        .set({"switchValue": switchValue});
-                                  },
-                                ),
+      body: !isLoadingDone
+          ? const Center(child: CircularProgressIndicator())
+          : Center(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          bottom: 80, left: 10, right: 10, top: 20),
+                      child: ListView.separated(
+                        physics: const NeverScrollableScrollPhysics(),
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        itemCount: reminder.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            tileColor: Colors.white,
+                            title: Text(
+                              reminder[index].format(context),
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textScaleFactor: 1.3,
+                            ),
+                            subtitle: const Text('Everyday'),
+                            trailing: SizedBox(
+                              width: 110,
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    height: 50.0,
+                                    width: 50,
+                                    child: FittedBox(
+                                      fit: BoxFit.contain,
+                                      child: CupertinoSwitch(
+                                        activeColor: const Color.fromARGB(
+                                            255, 79, 168, 197),
+                                        value: switchValue[index],
+                                        onChanged: (value) {
+                                          setState(() {
+                                            switchValue[index] = value;
+                                            DateTime noti = DateTime(
+                                                now.year,
+                                                now.month,
+                                                now.day,
+                                                reminder[index].hour,
+                                                reminder[index].minute);
+
+                                            int id = int.parse(
+                                                "${noti.hour}${noti.minute}");
+                                            if (value == false) {
+                                              flutterLocalNotificationsPlugin
+                                                  .cancel(id);
+                                              log('notification removed for id = $id');
+                                            }
+                                            if (value == true) {
+                                              service.showScheduledNotificationWithPayload(
+                                                  id: id,
+                                                  title: 'Water Intake Time',
+                                                  body:
+                                                      'It is time for you to drink 250ml water.',
+                                                  hour: 0,
+                                                  mins: 0,
+                                                  payload: 'payload',
+                                                  toSet: noti);
+                                            }
+                                          });
+                                          FirebaseFirestore.instance
+                                              .collection('Default-User-Water')
+                                              .doc('bool')
+                                              .set(
+                                                  {"switchValue": switchValue});
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                  IconButton(
+                                      onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (ctx) => AlertDialog(
+                                            title: const Text(
+                                                "Delete Water Intake Reminder!"),
+                                            content: const Text(
+                                                "Are you sure you want to delete this Intake Reminder?"),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                onPressed: () {
+                                                  _deleteTime(index);
+                                                  setState(() {});
+                                                  Navigator.pop(context, true);
+                                                },
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.all(14),
+                                                  child: const Text(
+                                                    "Delete",
+                                                    style: TextStyle(
+                                                        color: Colors.red),
+                                                  ),
+                                                ),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context, true);
+                                                },
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.all(14),
+                                                  child: const Text(
+                                                    "Cancel",
+                                                    style: TextStyle(
+                                                        color: Colors.green),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                      icon: const Icon(Icons.close)),
+                                ],
                               ),
                             ),
-                            IconButton(
-                                onPressed: () {
-                                  _deleteTime(index);
-                                  setState(() {});
-                                },
-                                icon: const Icon(Icons.close)),
-                          ],
-                        ),
+                          );
+                        },
+                        separatorBuilder: (context, index) {
+                          return const Divider();
+                        },
                       ),
-                    );
-                  },
-                  separatorBuilder: (context, index) {
-                    return const Divider();
-                  },
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'Add',
         backgroundColor: const Color.fromARGB(255, 79, 168, 197),
@@ -201,7 +246,7 @@ class ReminderPageState extends State<ReminderPage> {
       FirebaseFirestore.instance
           .collection('Default-User-Water')
           .doc('reminders')
-          .set({"reminders ${DateTime.now().day}": tempReminder});
+          .set({"reminders": tempReminder});
 
       FirebaseFirestore.instance
           .collection('Default-User-Water')
@@ -210,8 +255,9 @@ class ReminderPageState extends State<ReminderPage> {
       if (time == null) {
         DateTime noti =
             DateTime(now.year, now.month, now.day, picked.hour, picked.minute);
+        int id = int.parse("${noti.hour}${noti.minute}");
         service.showScheduledNotificationWithPayload(
-            id: noti.hashCode,
+            id: id,
             title: 'Water Intake Time',
             body: 'It is time for you to drink 250ml water.',
             hour: 0,
@@ -225,8 +271,9 @@ class ReminderPageState extends State<ReminderPage> {
   Future<void> _deleteTime(int index) async {
     DateTime noti = DateTime(now.year, now.month, now.day, reminder[index].hour,
         reminder[index].minute);
-    flutterLocalNotificationsPlugin.cancel(noti.hashCode);
-    log('notification cancelled for id = ${noti.hashCode}');
+    int id = int.parse("${noti.hour}${noti.minute}");
+    flutterLocalNotificationsPlugin.cancel(id);
+    log('notification cancelled for id = $id');
     reminder.removeAt(index);
     switchValue.removeAt(index);
     List<String> tempReminder = [];
@@ -237,7 +284,7 @@ class ReminderPageState extends State<ReminderPage> {
     FirebaseFirestore.instance
         .collection('Default-User-Water')
         .doc('reminders')
-        .set({"reminders ${DateTime.now().day}": tempReminder});
+        .set({"reminders": tempReminder});
     FirebaseFirestore.instance
         .collection('Default-User-Water')
         .doc('bool')
@@ -247,21 +294,20 @@ class ReminderPageState extends State<ReminderPage> {
   getdata() async {
     final format = DateFormat.jm();
     var docUser = FirebaseFirestore.instance.collection("Default-User-Water");
-
-    docUser.doc('reminders').get().then((value) {
-      setState(() {
-        for (var element
-            in List.from(value['reminders ${DateTime.now().day}'])) {
-          TimeOfDay data = TimeOfDay.fromDateTime(format.parse(element));
-          reminder.add(data);
-        }
-      });
-    });
     docUser.doc('bool').get().then((value) {
       setState(() {
         for (var element in List.from(value['switchValue'])) {
           bool data1 = element;
           switchValue.add(data1);
+        }
+        isLoadingDone = true;
+      });
+    });
+    docUser.doc('reminders').get().then((value) {
+      setState(() {
+        for (var element in List.from(value['reminders'])) {
+          TimeOfDay data = TimeOfDay.fromDateTime(format.parse(element));
+          reminder.add(data);
         }
       });
     });
@@ -296,9 +342,10 @@ class ReminderPageState extends State<ReminderPage> {
               now.year, now.month, now.day, wakeTimeee.hour, wakeTimeee.minute);
           DateTime noti1 = DateTime(now.year, now.month, now.day,
               noti.hour + hour1, noti.minute + min1);
+          int id = int.parse("${noti1.hour}${noti1.minute}");
 
           service.showScheduledNotificationWithPayload(
-              id: noti1.hashCode,
+              id: id,
               title: 'Water Intake Time',
               body: 'It is time for you to drink 250ml water.',
               hour: hour1,
@@ -327,7 +374,11 @@ class ReminderPageState extends State<ReminderPage> {
               )),
         ),
       );
-      callMethod.selectTime(context);
+      var list = [TimeOfDay.now().format(context)];
+      FirebaseFirestore.instance
+          .collection('Default-User-Water')
+          .doc('user1')
+          .update({"user1": FieldValue.arrayUnion(list)});
       setState(() {});
     }
   }

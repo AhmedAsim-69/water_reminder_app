@@ -118,6 +118,7 @@ class LocalNotificationService {
         androidAllowWhileIdle: true,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.time,
       );
       log('Notification set for ${tz.TZDateTime.from(
         toSet.add(Duration(hours: hour, minutes: mins)),
