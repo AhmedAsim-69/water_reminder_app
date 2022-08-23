@@ -1,33 +1,25 @@
 import 'package:flutter/material.dart';
 
 import 'dart:async';
-import 'dart:developer';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:intl/intl.dart';
 
-import 'package:water_reminder/pages/services/local_notification_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Home extends StatefulWidget {
-  Home({Key? key, this.enAdd}) : super(key: key);
-
-  bool? enAdd;
+  const Home({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<Home> createState() => HomeState();
 }
 
-List<TimeOfDay> times = [];
-List<TimeOfDay> reminder = [];
-List<bool> switchValue = [];
-bool isLoading = false;
-int intake = 0;
-Timer? timer;
 String genderrrr = '';
-final LocalNotificationService service = LocalNotificationService();
 
 class HomeState extends State<Home> {
+  bool isLoading = false;
+
+  List<TimeOfDay> times = [];
   final format = DateFormat("hh:mm a");
   TimeOfDay setTime = TimeOfDay.now();
   int intake = 1;
@@ -36,45 +28,13 @@ class HomeState extends State<Home> {
   void initState() {
     times = [];
     isLoading = false;
+    super.initState();
     getdata();
     getintake();
-
-    FirebaseMessaging.instance.getInitialMessage().then((message) {
-      if (message != null) {
-        final routeFromMessage = message.data["route"];
-
-        Navigator.of(context).pushNamed(routeFromMessage);
-      }
-    });
-
-    FirebaseMessaging.onMessage.listen((message) {
-      if (message.notification != null) {
-        log('${message.notification!.body}');
-        log('${message.notification!.title}');
-      }
-      service.showNotification(
-          id: 0,
-          title: 'Water Intake Time',
-          body: 'It is time for you to drink 250ml water');
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      final routeFromMessage = message.data["route"];
-      Navigator.of(context).pushNamed(routeFromMessage);
-    });
-
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    timer?.cancel();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    log('isLoading = $isLoading');
     double val = (times.length) / intake * 250;
     return Scaffold(
       appBar: AppBar(
@@ -366,12 +326,13 @@ class HomeState extends State<Home> {
         },
       );
     }
-
-    setTime = picked!;
+    if (picked != null) setTime = picked;
     (index == null) ? addItemToList(setTime) : times[index] = setTime;
     List<String> tempTimes = [];
     for (var item in times) {
-      tempTimes.add(item.format(context));
+      if (mounted) {
+        tempTimes.add(item.format(context));
+      }
     }
     FirebaseFirestore.instance
         .collection('Default-User-Water')
@@ -441,7 +402,7 @@ class HomeState extends State<Home> {
     }
   }
 
-  getdata() async {
+  Future<void> getdata() async {
     final format = DateFormat.jm();
     await FirebaseFirestore.instance
         .collection("Default-User-Water")

@@ -3,13 +3,13 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 import 'package:water_reminder/pages/home.dart';
 import 'package:water_reminder/pages/homepage.dart';
 import 'package:water_reminder/pages/services/local_notification_service.dart';
-import 'package:water_reminder/pages/splashscreen.dart';
 
 class ReminderPage extends StatefulWidget {
   const ReminderPage({
@@ -21,6 +21,15 @@ class ReminderPage extends StatefulWidget {
 }
 
 class ReminderPageState extends State<ReminderPage> {
+  AndroidNotificationChannel channel = const AndroidNotificationChannel(
+      'high_importance_channel', 'High Importance Notifications',
+      importance: Importance.high, playSound: true);
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  List<TimeOfDay> reminder = [];
+  List<bool> switchValue = [];
   final format = DateFormat("hh:mm a");
   TimeOfDay setTime = TimeOfDay.now();
   DateTime now = DateTime.now();
@@ -31,11 +40,10 @@ class ReminderPageState extends State<ReminderPage> {
     reminder = [];
     switchValue = [];
     isLoadingDone = false;
+    super.initState();
     getdata();
     service.intialize();
     listenToNotification();
-
-    super.initState();
   }
 
   @override
@@ -203,21 +211,28 @@ class ReminderPageState extends State<ReminderPage> {
         heroTag: 'Add',
         backgroundColor: const Color.fromARGB(255, 79, 168, 197),
         onPressed: () {
-          _selectTime(context);
-          setState(() {});
+          bool check = true;
+          _selectTime(context, null, check);
         },
         child: const Icon(Icons.add),
       ),
     );
   }
 
-  _addItemToList(TimeOfDay setTime) {
+  _addItemToList(TimeOfDay setTime, [bool? update]) {
     List<TimeOfDay> tempList = reminder;
     tempList.add(setTime);
-    reminder = tempList;
+    if (update == true) {
+      setState(() {
+        reminder = tempList;
+      });
+    } else {
+      reminder = tempList;
+    }
   }
 
-  Future<void> _selectTime(BuildContext context, [TimeOfDay? time]) async {
+  Future<void> _selectTime(BuildContext context,
+      [TimeOfDay? time, bool? ss]) async {
     TimeOfDay? picked = (time == null)
         ? await showTimePicker(
             context: context,
@@ -234,13 +249,15 @@ class ReminderPageState extends State<ReminderPage> {
 
     if (picked != null && picked != setTime) {
       setTime = picked;
-      _addItemToList(setTime);
+      (ss == true) ? _addItemToList(setTime, ss) : _addItemToList(setTime);
 
       switchValue.add(true);
       List<String> tempReminder = [];
 
       for (var item in reminder) {
-        tempReminder.add(item.format(context));
+        if (mounted) {
+          tempReminder.add(item.format(context));
+        }
       }
 
       FirebaseFirestore.instance
@@ -291,7 +308,7 @@ class ReminderPageState extends State<ReminderPage> {
         .set({"switchValue": switchValue});
   }
 
-  getdata() async {
+  Future<void> getdata() async {
     final format = DateFormat.jm();
     var docUser = FirebaseFirestore.instance.collection("Default-User-Water");
     docUser.doc('bool').get().then((value) {
@@ -313,7 +330,7 @@ class ReminderPageState extends State<ReminderPage> {
     });
   }
 
-  dynamicGeneration(BuildContext context, TimeOfDay bedTimeee,
+  void dynamicGeneration(BuildContext context, TimeOfDay bedTimeee,
       TimeOfDay wakeTimeee, int rem, int intake, DateTime wakeTime1) {
     TimeOfDay temp = (bedTimeee.hour < 12)
         ? TimeOfDay(
@@ -370,7 +387,6 @@ class ReminderPageState extends State<ReminderPage> {
         MaterialPageRoute(
           builder: ((context) => Homepage(
                 gender: genderrrr,
-                enAdd: true,
               )),
         ),
       );

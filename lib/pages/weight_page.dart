@@ -15,6 +15,11 @@ class _WeightPageState extends State<WeightPage> {
   final weightctrl = TextEditingController();
   var weight = 0;
   final _formKey = GlobalKey<FormState>();
+  @override
+  void dispose() {
+    weightctrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

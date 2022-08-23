@@ -1,17 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:water_reminder/pages/homepage.dart';
 import 'package:water_reminder/pages/weight_page.dart';
-
-const AndroidNotificationChannel channel = AndroidNotificationChannel(
-    'high_importance_channel', 'High Importance Notifications',
-    importance: Importance.high, playSound: true);
-
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -31,28 +23,30 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
+    super.initState();
     getData(null, gender);
     checkstate();
 
-    super.initState();
-
-    Future.delayed(const Duration(seconds: 3), (() {
-      Navigator.of(context).popUntil((route) => route.isFirst);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => (flag == true)
-              ? Homepage(
-                  bedtime: bedTime,
-                  gender: gender,
-                  waketime: wakeTime,
-                )
-              : const WeightPage(
-                  title: 'title',
-                ),
-        ),
-      );
-    }));
+    Future.delayed(
+      const Duration(seconds: 3),
+      (() {
+        Navigator.of(context).popUntil((route) => route.isFirst);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => (flag == true)
+                ? Homepage(
+                    bedtime: bedTime,
+                    gender: gender,
+                    waketime: wakeTime,
+                  )
+                : const WeightPage(
+                    title: 'title',
+                  ),
+          ),
+        );
+      }),
+    );
   }
 
   @override
@@ -116,10 +110,10 @@ int? getData(
 
     wakeTime = (wakeTime != null) ? stamp2!.toDate() : null;
 
-    if (intake == null) {
-      callbackfunction!(gender);
-    } else {
-      callbackfunction!(intake, bedTime, wakeTime);
+    if (intake == null && callbackfunction != null) {
+      callbackfunction(gender);
+    } else if (callbackfunction != null) {
+      callbackfunction(intake, bedTime, wakeTime);
     }
   });
   return intake;

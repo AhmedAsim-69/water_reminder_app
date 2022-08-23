@@ -34,8 +34,9 @@ class _WaterIntakePageState extends State<WaterIntakePage> {
   late var wakeTime1 = widget.wakeTime;
   late var bedTime1 = widget.bedTime;
   @override
-  void initState() {
-    super.initState();
+  void dispose() {
+    weightctrl.dispose();
+    super.dispose();
   }
 
   @override

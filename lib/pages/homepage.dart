@@ -5,13 +5,13 @@ import 'package:water_reminder/pages/settings.dart';
 import 'home.dart';
 
 class Homepage extends StatefulWidget {
-  Homepage(
+  const Homepage(
       {Key? key, this.bedtime, this.waketime, required this.gender, this.enAdd})
       : super(key: key);
   final DateTime? bedtime;
   final DateTime? waketime;
   final String gender;
-  bool? enAdd;
+  final bool? enAdd;
 
   @override
   State<Homepage> createState() => _HomepageState();
@@ -24,9 +24,7 @@ class _HomepageState extends State<Homepage> {
   @override
   Widget build(BuildContext context) {
     List<Widget> widgetOptions = <Widget>[
-      Home(
-        enAdd: widget.enAdd,
-      ),
+      const Home(),
       SettingsPage(
           title: 'title',
           waketime: widget.waketime,

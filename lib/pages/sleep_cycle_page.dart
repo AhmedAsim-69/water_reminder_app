@@ -36,6 +36,13 @@ class _SleepCyclePageState extends State<SleepCyclePage> {
 
   DateTime? wakeTime = DateTime(2017, 9, 7, 9, 30);
   DateTime? bedTime = DateTime(2017, 9, 7, 22, 30);
+
+  @override
+  void dispose() {
+    weightctrl.dispose();
+    super.dispose();
+  }
+
   callback1(varTopic) {
     setState(() {
       wakeTime = varTopic;

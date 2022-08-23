@@ -28,11 +28,10 @@ class SettingsPage extends StatefulWidget {
 
 enum SingingCharacter { male, female }
 
-bool flagGender = false;
-bool flagBedTime = false;
-bool flagWakeTime = false;
-
 class _SettingsPageState extends State<SettingsPage> {
+  bool flagGender = false;
+  bool flagBedTime = false;
+  bool flagWakeTime = false;
   String tempGender = '';
   CollectionReference collectionReference =
       FirebaseFirestore.instance.collection('Default-User');
@@ -43,8 +42,8 @@ class _SettingsPageState extends State<SettingsPage> {
   late var bedTime1 = widget.bedtime;
   @override
   void initState() {
-    getData(null, tempGender, null, null, null, null, callback);
     super.initState();
+    getData(null, tempGender, null, null, null, null, callback);
   }
 
   callback(varGender) {
