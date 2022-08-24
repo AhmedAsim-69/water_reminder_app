@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:water_reminder/pages/home.dart';
 import 'package:water_reminder/pages/reminder_page.dart';
 
 import 'package:water_reminder/pages/water_intake.dart';
@@ -116,19 +117,26 @@ class _SleepCyclePageState extends State<SleepCyclePage> {
                         minimumSize: const Size(325, 45),
                       ),
                       onPressed: () {
-                        createUser(
-                            weight: widget.weight,
-                            gender: widget.gender,
-                            bedTime: bedTime,
-                            wakeTime: wakeTime);
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => WaterIntakePage(
-                                  title: 'title',
-                                  weight: weight1,
-                                  gender: gender1,
-                                  bedTime: bedTime,
-                                  wakeTime: wakeTime,
-                                )));
+                        int diff = (bedTime!.hour - wakeTime!.hour).abs();
+                        if (diff > 4) {
+                          createUser(
+                              weight: widget.weight,
+                              gender: widget.gender,
+                              bedTime: bedTime,
+                              wakeTime: wakeTime);
+
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => WaterIntakePage(
+                                    title: 'title',
+                                    weight: weight1,
+                                    gender: gender1,
+                                    bedTime: bedTime,
+                                    wakeTime: wakeTime,
+                                  )));
+                        } else {
+                          snackbar("Please take atleast 4 hours of sleep",
+                              context, Colors.red);
+                        }
                       },
                       child: const Text(
                         "CONTINUE",

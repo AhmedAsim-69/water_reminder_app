@@ -222,12 +222,11 @@ class ReminderPageState extends State<ReminderPage> {
   _addItemToList(TimeOfDay setTime, [bool? update]) {
     List<TimeOfDay> tempList = reminder;
     tempList.add(setTime);
+    reminder = tempList;
     if (update == true) {
       setState(() {
         reminder = tempList;
       });
-    } else {
-      reminder = tempList;
     }
   }
 
@@ -249,17 +248,18 @@ class ReminderPageState extends State<ReminderPage> {
 
     if (picked != null && picked != setTime) {
       setTime = picked;
-      (ss == true) ? _addItemToList(setTime, ss) : _addItemToList(setTime);
+      if (ss != null) {
+        _addItemToList(setTime, ss);
+      } else {
+        _addItemToList(setTime);
+      }
 
       switchValue.add(true);
       List<String> tempReminder = [];
 
       for (var item in reminder) {
-        if (mounted) {
-          tempReminder.add(item.format(context));
-        }
+        tempReminder.add(item.format(context));
       }
-
       FirebaseFirestore.instance
           .collection('Default-User-Water')
           .doc('reminders')
@@ -342,7 +342,6 @@ class ReminderPageState extends State<ReminderPage> {
     double glass = intake / 250;
     int hour = temp.hour ~/ glass;
     double addMin = temp.hour / glass;
-
     int min = (temp.minute ~/ glass + ((addMin % 1) * 60)).ceil();
     int hour1 = hour;
     int min1 = min;
@@ -381,6 +380,7 @@ class ReminderPageState extends State<ReminderPage> {
       service.onNotificationClick.stream.listen(onNoticationListener);
 
   void onNoticationListener(String? payload) {
+    log("listened");
     if (payload != null && payload.isNotEmpty) {
       Navigator.push(
         context,
@@ -395,7 +395,9 @@ class ReminderPageState extends State<ReminderPage> {
           .collection('Default-User-Water')
           .doc('user1')
           .update({"user1": FieldValue.arrayUnion(list)});
-      setState(() {});
+      setState(() {
+        log('done with updating time $list');
+      });
     }
   }
 }

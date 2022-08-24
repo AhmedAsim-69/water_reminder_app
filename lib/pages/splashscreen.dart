@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,7 +14,7 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-bool? flag;
+bool flag = false;
 
 class _SplashScreenState extends State<SplashScreen> {
   String gender = '';
@@ -20,16 +22,19 @@ class _SplashScreenState extends State<SplashScreen> {
   Timestamp stamp1 = Timestamp.now();
   Timestamp stamp2 = Timestamp.now();
   DateTime wakeTime = DateTime.now();
+  int intake = 0;
 
   @override
   void initState() {
     super.initState();
-    getData(null, gender);
-    checkstate();
+    getData(intake, gender);
+    // checkstate();
 
     Future.delayed(
-      const Duration(seconds: 3),
+      const Duration(seconds: 5),
       (() {
+        log('flagggg ====   $flag');
+
         Navigator.of(context).popUntil((route) => route.isFirst);
         Navigator.pushReplacement(
           context,
@@ -71,7 +76,7 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 
-  checkstate() async {
+  Future<void> checkstate() async {
     await FirebaseFirestore.instance
         .collection('Default-User')
         .doc('user1')
@@ -90,16 +95,20 @@ class _SplashScreenState extends State<SplashScreen> {
 
 CollectionReference collectionReference =
     FirebaseFirestore.instance.collection('Default-User');
-int? getData(
+Future<int?> getData(
     [int? intake,
     String? gender,
     DateTime? bedTime,
     Timestamp? stamp1,
     Timestamp? stamp2,
     DateTime? wakeTime,
-    Function? callbackfunction]) {
-  collectionReference.doc('user1').get().then((value) {
+    Function? callbackfunction]) async {
+  await collectionReference.doc('user1').get().then((value) {
     intake = (intake != null) ? (value)['waterIntake'] : null;
+
+    if (intake != null && intake! > 0) {
+      flag = true;
+    }
     gender = (gender != null) ? (value)['gender'] : null;
 
     stamp1 = (stamp1 != null) ? (value)['bedTime'] : null;

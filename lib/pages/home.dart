@@ -330,9 +330,7 @@ class HomeState extends State<Home> {
     (index == null) ? addItemToList(setTime) : times[index] = setTime;
     List<String> tempTimes = [];
     for (var item in times) {
-      if (mounted) {
-        tempTimes.add(item.format(context));
-      }
+      tempTimes.add(item.format(context));
     }
     FirebaseFirestore.instance
         .collection('Default-User-Water')
@@ -433,10 +431,12 @@ class HomeState extends State<Home> {
 }
 
 ScaffoldFeatureController<SnackBar, SnackBarClosedReason> snackbar(
-    String msg, BuildContext context) {
+    String msg, BuildContext context,
+    [Color? color]) {
   return ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
-      backgroundColor: const Color.fromARGB(255, 104, 176, 200),
+      backgroundColor:
+          (color != null) ? color : const Color.fromARGB(255, 104, 176, 200),
       content: Text(
         msg,
         style: const TextStyle(

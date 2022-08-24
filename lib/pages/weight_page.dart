@@ -95,6 +95,9 @@ class _WeightPageState extends State<WeightPage> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your weight';
+                          } else if (int.parse(value) < 20 ||
+                              int.parse(value) > 350) {
+                            return 'Please enter weight between 20-350 Kgs';
                           }
                           return null;
                         },

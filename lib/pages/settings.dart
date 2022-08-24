@@ -183,6 +183,9 @@ class _SettingsPageState extends State<SettingsPage> {
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter your weight';
+                              } else if (int.parse(value) < 20 ||
+                                  int.parse(value) > 350) {
+                                return 'Please enter weight between 20-350 Kgs';
                               }
                               return null;
                             },
@@ -335,6 +338,8 @@ class _SettingsPageState extends State<SettingsPage> {
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return "Please enter your daily water in-take in 'ml'";
+                              } else if (int.parse(value) < 1000) {
+                                return 'Please enter water intake above 1000ml';
                               }
                               return null;
                             },
@@ -372,27 +377,34 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    setState(
-                      () {
-                        final docUser = FirebaseFirestore.instance
-                            .collection('Default-User')
-                            .doc('user1');
-                        if (flagBedTime) {
-                          docUser.update({'bedTime': bedTime1});
-                          flagBedTime = false;
-                        }
-                        if (flagWakeTime) {
-                          docUser.update({'wakeTime': wakeTime1});
-                          flagWakeTime = false;
-                        }
-                        docUser.update({
-                          'weight': int.parse(weightctrl.text),
-                          'gender': '$character',
-                          'waterIntake': int.parse(waterctrl.text)
-                        });
-                        snackbar("Changes Saved", context);
-                      },
-                    );
+                    int diff = (bedTime1!.hour - wakeTime1!.hour).abs();
+
+                    if (diff > 4 || diff == 0) {
+                      setState(
+                        () {
+                          final docUser = FirebaseFirestore.instance
+                              .collection('Default-User')
+                              .doc('user1');
+                          if (flagBedTime) {
+                            docUser.update({'bedTime': bedTime1});
+                            flagBedTime = false;
+                          }
+                          if (flagWakeTime) {
+                            docUser.update({'wakeTime': wakeTime1});
+                            flagWakeTime = false;
+                          }
+                          docUser.update({
+                            'weight': int.parse(weightctrl.text),
+                            'gender': '$character',
+                            'waterIntake': int.parse(waterctrl.text)
+                          });
+                          snackbar("Changes Saved", context);
+                        },
+                      );
+                    } else {
+                      snackbar("Please take atleast 4 hours of sleep", context,
+                          Colors.red);
+                    }
                   }
                 },
                 child: const Text(
