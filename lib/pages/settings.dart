@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -378,8 +380,9 @@ class _SettingsPageState extends State<SettingsPage> {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     int diff = (bedTime1!.hour - wakeTime1!.hour).abs();
+                    log('$diff');
 
-                    if (diff > 4 || diff == 0) {
+                    if (diff >= 4 || diff == 0) {
                       setState(
                         () {
                           final docUser = FirebaseFirestore.instance
@@ -402,7 +405,9 @@ class _SettingsPageState extends State<SettingsPage> {
                         },
                       );
                     } else {
-                      snackbar("Please take atleast 4 hours of sleep", context,
+                      snackbar(
+                          "WakeTime and BedTime must be atleast 4 hour apart",
+                          context,
                           Colors.red);
                     }
                   }

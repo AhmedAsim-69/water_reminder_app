@@ -1,5 +1,7 @@
 // ignore_for_file: must_be_immutable
 
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 import 'package:intl/intl.dart';
@@ -117,7 +119,8 @@ class _SleepCyclePageState extends State<SleepCyclePage> {
                         minimumSize: const Size(325, 45),
                       ),
                       onPressed: () {
-                        int diff = (bedTime!.hour - wakeTime!.hour).abs();
+                        int diff = (wakeTime!.hour - bedTime!.hour).abs();
+                        log('$diff');
                         if (diff > 4) {
                           createUser(
                               weight: widget.weight,
@@ -134,8 +137,10 @@ class _SleepCyclePageState extends State<SleepCyclePage> {
                                     wakeTime: wakeTime,
                                   )));
                         } else {
-                          snackbar("Please take atleast 4 hours of sleep",
-                              context, Colors.red);
+                          snackbar(
+                              "WakeTime and BedTime must be atleast 4 hour apart",
+                              context,
+                              Colors.red);
                         }
                       },
                       child: const Text(

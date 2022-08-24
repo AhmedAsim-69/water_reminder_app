@@ -347,31 +347,31 @@ class ReminderPageState extends State<ReminderPage> {
     int min1 = min;
     if (bedTimeee.hour >= 12) {
       min = temp.minute ~/ glass;
-      if (reminder.length * 250 < intake) {
-        for (int x = 0; x <= glass; x++) {
-          _selectTime(
-              context,
-              TimeOfDay.fromDateTime(
-                  wakeTime1.add(Duration(hours: hour1, minutes: min1))));
+    }
+    if (reminder.length * 250 < intake) {
+      for (int x = 0; x <= glass; x++) {
+        _selectTime(
+            context,
+            TimeOfDay.fromDateTime(
+                wakeTime1.add(Duration(hours: hour1, minutes: min1))));
 
-          DateTime noti = DateTime(
-              now.year, now.month, now.day, wakeTimeee.hour, wakeTimeee.minute);
-          DateTime noti1 = DateTime(now.year, now.month, now.day,
-              noti.hour + hour1, noti.minute + min1);
-          int id = int.parse("${noti1.hour}${noti1.minute}");
+        DateTime noti = DateTime(
+            now.year, now.month, now.day, wakeTimeee.hour, wakeTimeee.minute);
+        DateTime noti1 = DateTime(now.year, now.month, now.day,
+            noti.hour + hour1, noti.minute + min1);
+        int id = int.parse("${noti1.hour}${noti1.minute}");
 
-          service.showScheduledNotificationWithPayload(
-              id: id,
-              title: 'Water Intake Time',
-              body: 'It is time for you to drink 250ml water.',
-              hour: hour1,
-              mins: min1,
-              payload: 'payload',
-              toSet: noti);
-          hour1 += hour;
-          min1 += min;
-          if (reminder.length * 250 >= intake) break;
-        }
+        service.showScheduledNotificationWithPayload(
+            id: id,
+            title: 'Water Intake Time',
+            body: 'It is time for you to drink 250ml water.',
+            hour: hour1,
+            mins: min1,
+            payload: 'payload',
+            toSet: noti);
+        hour1 += hour;
+        min1 += min;
+        if (reminder.length * 250 >= intake) break;
       }
     }
   }

@@ -109,33 +109,33 @@ class _WaterIntakePageState extends State<WaterIntakePage> {
                         minimumSize: const Size(325, 45),
                       ),
                       onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          setState(() {
-                            waterIntake = int.parse(weightctrl.text);
-                            createUser(
-                              weight: widget.weight,
-                              gender: widget.gender,
-                              wakeTime: widget.wakeTime,
-                              bedTime: widget.bedTime,
-                              waterIntake: waterIntake,
-                            );
-                          });
-                          Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                builder: (context) => Homepage(
-                                    waketime: wakeTime1,
-                                    bedtime: bedTime1,
-                                    gender: widget.gender),
-                              ),
-                              (Route<dynamic> route) => false);
+                        setState(() {
+                          waterIntake = int.parse(weightctrl.text);
+
                           generate.dynamicGeneration(
                               context,
-                              TimeOfDay.fromDateTime(bedTime1!),
-                              TimeOfDay.fromDateTime(wakeTime1!),
+                              TimeOfDay.fromDateTime(widget.bedTime!),
+                              TimeOfDay.fromDateTime(widget.wakeTime!),
                               0,
                               waterIntake,
-                              wakeTime1!);
-                        }
+                              widget.wakeTime!);
+
+                          createUser(
+                            weight: widget.weight,
+                            gender: widget.gender,
+                            wakeTime: widget.wakeTime,
+                            bedTime: widget.bedTime,
+                            waterIntake: waterIntake,
+                          );
+                        });
+                        Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                              builder: (context) => Homepage(
+                                  waketime: wakeTime1,
+                                  bedtime: bedTime1,
+                                  gender: widget.gender),
+                            ),
+                            (Route<dynamic> route) => false);
                       },
                       child: const Text(
                         "CONTINUE",
