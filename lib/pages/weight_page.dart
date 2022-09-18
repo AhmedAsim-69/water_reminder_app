@@ -108,7 +108,8 @@ class _WeightPageState extends State<WeightPage> {
                     ),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: const Color.fromARGB(255, 79, 168, 197),
+                        backgroundColor:
+                            const Color.fromARGB(255, 79, 168, 197),
                         elevation: 3,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(32.0)),

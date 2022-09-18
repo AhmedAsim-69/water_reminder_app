@@ -31,7 +31,7 @@ class _HomepageState extends State<Homepage> {
           bedtime: widget.bedtime,
           gender: widget.gender),
     ];
-    void _onItemTapped(int index) {
+    void onItemTapped(int index) {
       setState(() {
         _selectedIndex = index;
       });
@@ -55,7 +55,7 @@ class _HomepageState extends State<Homepage> {
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.white,
-        onTap: _onItemTapped,
+        onTap: onItemTapped,
       ),
     );
   }

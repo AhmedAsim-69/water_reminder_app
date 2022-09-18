@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 
 import 'dart:async';
@@ -192,7 +194,7 @@ class HomeState extends State<Home> {
                                   ),
                                   TextButton.icon(
                                     style: ElevatedButton.styleFrom(
-                                      primary: const Color.fromARGB(
+                                      backgroundColor: const Color.fromARGB(
                                           255, 79, 168, 197),
                                       elevation: 3,
                                       shape: RoundedRectangleBorder(
